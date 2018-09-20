@@ -1,6 +1,4 @@
-/* tslint:disable no-unused-variable */
-import { Application } from 'probot'
-/* tslint:enable no-unused-variable */
+import { Application } from 'probot' // eslint-disable-line
 
 export = (app: Application) => {
   // Your code here

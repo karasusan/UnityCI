@@ -1,4 +1,4 @@
-# unityci
+# UnityCI
 
 > A GitHub App built with [Probot](https://probot.github.io) that Continuous Integration for Unity Project
 
@@ -7,6 +7,9 @@
 ```sh
 # Install dependencies
 npm install
+
+# Run typescript
+npm run build
 
 # Run the bot
 npm start

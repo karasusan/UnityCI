@@ -1,12 +1,13 @@
 import { Application } from 'probot' // eslint-disable-line
 
 export = (app: Application) => {
-  // Your code here
-  app.log('Yay, the app was loaded!')
-
-  // For more information on building apps:
-  // https://probot.github.io/docs/
-
-  // To get your app running against GitHub, see:
-  // https://probot.github.io/docs/development/
+  app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
+    const issueBody : string = context.payload.issue.body
+    app.log('Pull Request received! ' + issueBody)
+  })
+  app.on('push', async context => {
+    // Code was pushed to the repo, what should we do with it?
+    app.log(context)
+    //context.github.checks.
+  })
 }

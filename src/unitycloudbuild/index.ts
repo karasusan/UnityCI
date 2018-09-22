@@ -1,6 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
-
-import * as request from "superagent";
+import request from "superagent";
 import {
   SuperAgentStatic
 } from "superagent";
@@ -1837,9 +1835,6 @@ export default class UnityCloudBuildAPI {
 
           'shallowclone': boolean
 
-        }
-
-        'scm': {
           'oauth': {
             'scm_provider': string
 
@@ -1948,9 +1943,6 @@ export default class UnityCloudBuildAPI {
 
           'shallowclone': boolean
 
-        }
-
-        'scm': {
           'oauth': {
             'scm_provider': string
 
@@ -2155,9 +2147,6 @@ export default class UnityCloudBuildAPI {
 
           'shallowclone': boolean
 
-        }
-
-        'scm': {
           'oauth': {
             'scm_provider': string
 
@@ -2268,9 +2257,6 @@ export default class UnityCloudBuildAPI {
 
           'shallowclone': boolean
 
-        }
-
-        'scm': {
           'oauth': {
             'scm_provider': string
 
@@ -2440,7 +2426,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  getBillingPlansURL(parameters: {
+  getBillingPlansURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     $queryParameters ? : any,
@@ -2471,7 +2457,7 @@ export default class UnityCloudBuildAPI {
    * @param {string} orgid - Organization identifier
    * @param {string} projectid - Project identifier
    */
-  getBillingPlans(parameters: {
+  getBillingPlansWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     $queryParameters ? : any,
@@ -2511,7 +2497,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  getSSHKeyURL(parameters: {
+  getSSHKeyURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     $queryParameters ? : any,
@@ -2542,7 +2528,7 @@ export default class UnityCloudBuildAPI {
    * @param {string} orgid - Organization identifier
    * @param {string} projectid - Project identifier
    */
-  getSSHKey(parameters: {
+  getSSHKeyWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     $queryParameters ? : any,
@@ -3035,7 +3021,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  getHookURL(parameters: {
+  getHookURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3070,7 +3056,7 @@ export default class UnityCloudBuildAPI {
    * @param {string} projectid - Project identifier
    * @param {string} id - Hook record identifier
    */
-  getHook(parameters: {
+  getHookWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3113,7 +3099,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  deleteHookURL(parameters: {
+  deleteHookURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3148,7 +3134,7 @@ export default class UnityCloudBuildAPI {
    * @param {string} projectid - Project identifier
    * @param {string} id - Hook record identifier
    */
-  deleteHook(parameters: {
+  deleteHookWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3191,7 +3177,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  updateHookURL(parameters: {
+  updateHookURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3328,7 +3314,7 @@ export default class UnityCloudBuildAPI {
   ```
 
   */
-  updateHook(parameters: {
+  updateHookWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3386,7 +3372,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  pingHookURL(parameters: {
+  pingHookURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3424,7 +3410,7 @@ export default class UnityCloudBuildAPI {
      * @param {string} projectid - Project identifier
      * @param {string} id - Hook record identifier
   */
-  pingHook(parameters: {
+  pingHookWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'id' ? : string,
@@ -3544,7 +3530,7 @@ export default class UnityCloudBuildAPI {
   setEnvVariablesForProjectURL(parameters: {
     'orgid': string,
     'projectid': string,
-    'envvars': ,
+    'envvars': any,
     $queryParameters ? : any,
     $domain ? : string
   }): string {
@@ -3577,7 +3563,7 @@ export default class UnityCloudBuildAPI {
   setEnvVariablesForProject(parameters: {
     'orgid': string,
     'projectid': string,
-    'envvars': ,
+    'envvars': any,
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
@@ -4606,7 +4592,7 @@ export default class UnityCloudBuildAPI {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
-    'envvars': ,
+    'envvars': any,
     $queryParameters ? : any,
     $domain ? : string
   }): string {
@@ -4643,7 +4629,7 @@ export default class UnityCloudBuildAPI {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
-    'envvars': ,
+    'envvars': any,
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
@@ -4697,7 +4683,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  getAuditLogURL(parameters: {
+  getAuditLogURLWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
@@ -4743,7 +4729,7 @@ export default class UnityCloudBuildAPI {
    * @param {number} perPage - Number of audit log records to retrieve
    * @param {number} page - Skip to page number, based on per_page value
    */
-  getAuditLog(parameters: {
+  getAuditLogWithProjectId(parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
@@ -6864,7 +6850,7 @@ export default class UnityCloudBuildAPI {
     });
   }
 
-  getAuditLogURL(parameters: {
+  getAuditLogURLWithProjectIdAndNumber(parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
@@ -6914,7 +6900,7 @@ export default class UnityCloudBuildAPI {
    * @param {number} perPage - Number of audit log records to retrieve
    * @param {number} page - Skip to page number, based on per_page value
    */
-  getAuditLog(parameters: {
+  getAuditLogWithProjectIdAndNumber(parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,

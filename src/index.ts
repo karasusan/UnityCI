@@ -3,7 +3,7 @@ import UnityCloudBuildAPI from './unitycloudbuild'
 
 export = (app: Application) => {
   let api = new UnityCloudBuildAPI()
-  console.log(api);
+  console.log(api)
 
   app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
     const issueBody : string = context.payload.issue.body

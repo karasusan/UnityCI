@@ -17,6 +17,9 @@ describe('UnityCI', () => {
   describe('pull request open trigger build project', () => {
     it('without default config', async () => {
       github = {
+        checks: {
+          create: jest.fn().mockResolvedValue(null)
+        },
         pullRequests: {
           createReviewRequest: jest.fn().mockResolvedValue(null)
         }
@@ -24,20 +27,7 @@ describe('UnityCI', () => {
       const payload = require('./fixtures/pullrequest.event.json')
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payload)
-      //expect(github.pullRequests.createReviewRequest).toMatchSnapshot()
-    })
-  })
-  describe('push trigger build project', () => {
-    it('without default config', async () => {
-      github = {
-        pullRequests: {
-          createReviewRequest: jest.fn().mockResolvedValue(null)
-        }
-      }
-      const payload = require('./fixtures/push.event.json')
-      robot.auth = () => Promise.resolve(github)
-      await robot.receive(payload)
-      //expect(github.pullRequests.createReviewRequest).toMatchSnapshot()
+      expect(github.checks.create).toHaveBeenCalled()
     })
   })
 })

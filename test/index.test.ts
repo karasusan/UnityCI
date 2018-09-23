@@ -5,7 +5,7 @@ import * as fs from 'fs'
 const payload = require('./fixtures/issues.event.json')
 const app = require('../src/index')
 
-describe('unityci', () => {
+describe('UnityCI', () => {
   let robot : Application
   let github : any
   const exampleConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')

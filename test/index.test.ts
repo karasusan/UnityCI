@@ -8,27 +8,26 @@ const app = require('../src/index')
 describe('UnityCI', () => {
   let robot : Application
   let github : any
-  const exampleConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+
   beforeEach(() => {
     robot = new Application()
+    // Initialize the app based on the code from index.js
     robot.load(app)
-    github = {
-      issues: {
-        createComment: jest.fn().mockResolvedValue(null),
-        edit: jest.fn().mockResolvedValue(null)
-      },
-      repos: {
-        getContent: jest.fn().mockResolvedValue({ data: {
-          content: exampleConfig,
-          encoding: 'utf-8'
-        }})
-      }
-    }
-
-    robot.auth = () => Promise.resolve(github)
   })
 
   describe('pull request trigger build success', () => {
+    const exampleConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+    beforeEach(() => {
+      github = {
+        issues: {
+          createComment: jest.fn().mockResolvedValue(null),
+          edit: jest.fn().mockResolvedValue(null)
+        }
+      }
+      // Passes the mocked out GitHub API into out app instance
+      robot.auth = () => Promise.resolve(github)
+    })
+
     it('without default config', async () => {
       const noDefaultConfig = yaml.safeLoad(exampleConfig)
       noDefaultConfig.caseInsensitive = true
@@ -46,9 +45,6 @@ describe('UnityCI', () => {
         }
       }
       robot.auth = () => Promise.resolve(github)
-      //const payload = ''
-      //const lowerPayload = Object.assign({}, payload)
-      //lowerPayload.payload.issue.body = 'test'
       await robot.receive(payload)
       expect(github.issues.createComment).toMatchSnapshot()
       expect(github.issues.edit).toMatchSnapshot()

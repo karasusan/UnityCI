@@ -1,13 +1,12 @@
 import { Application } from 'probot'
-import * as path from 'path'
-import * as yaml from 'js-yaml'
-import * as fs from 'fs'
-const payload = require('./fixtures/issues.event.json')
+//import * as path from 'path'
+//import * as yaml from 'js-yaml'
+//import * as fs from 'fs'
 const app = require('../src/index')
 
 describe('UnityCI', () => {
-  let robot : Application
-  let github : any
+  let robot: Application
+  let github: any
 
   beforeEach(() => {
     robot = new Application()
@@ -15,40 +14,30 @@ describe('UnityCI', () => {
     robot.load(app)
   })
 
-  describe('pull request trigger build success', () => {
-    const exampleConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
-    beforeEach(() => {
-      github = {
-        issues: {
-          createComment: jest.fn().mockResolvedValue(null),
-          edit: jest.fn().mockResolvedValue(null)
-        }
-      }
-      // Passes the mocked out GitHub API into out app instance
-      robot.auth = () => Promise.resolve(github)
-    })
-
+  describe('pull request open trigger build project', () => {
     it('without default config', async () => {
-      const noDefaultConfig = yaml.safeLoad(exampleConfig)
-      noDefaultConfig.caseInsensitive = true
-      noDefaultConfig.issueConfigs = [{ 'content': ['TEST'] }]
       github = {
-        issues: {
-          createComment: jest.fn().mockResolvedValue(null),
-          edit: jest.fn().mockResolvedValue(null)
-        },
-        repos: {
-          getContent: jest.fn().mockResolvedValue({ data: {
-            content: yaml.safeDump(noDefaultConfig),
-            encoding: 'utf-8'
-          }})
+        pullRequests: {
+          createReviewRequest: jest.fn().mockResolvedValue(null)
         }
       }
+      const payload = require('./fixtures/pullrequest.event.json')
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payload)
-      expect(github.issues.createComment).toMatchSnapshot()
-      expect(github.issues.edit).toMatchSnapshot()
-      expect(github.repos.getContent).toMatchSnapshot()
+      //expect(github.pullRequests.createReviewRequest).toMatchSnapshot()
+    })
+  })
+  describe('push trigger build project', () => {
+    it('without default config', async () => {
+      github = {
+        pullRequests: {
+          createReviewRequest: jest.fn().mockResolvedValue(null)
+        }
+      }
+      const payload = require('./fixtures/push.event.json')
+      robot.auth = () => Promise.resolve(github)
+      await robot.receive(payload)
+      //expect(github.pullRequests.createReviewRequest).toMatchSnapshot()
     })
   })
 })

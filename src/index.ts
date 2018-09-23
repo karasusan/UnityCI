@@ -6,12 +6,16 @@ export = (app: Application) => {
   console.log(api)
 
   app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
-    const issueBody : string = context.payload.issue.body
-    app.log('Pull Request received! ' + issueBody)
+    const title: string = context.payload.pull_request.title
+    app.log('Pull Request received! ' + title)
+    // TODO:: Call Unity Cloud Build API
+    // TODO:: Wait response from Unity Cloud Build
+    // TODO:: Call Check API
   })
   app.on('push', async context => {
-    // Code was pushed to the repo, what should we do with it?
-    app.log(context)
-    //context.github.checks.
+    app.log('Push event received!')
+    // TODO:: Call Unity Cloud Build API
+    // TODO:: Wait response from Unity Cloud Build
+    // TODO:: Call Check API
   })
 }

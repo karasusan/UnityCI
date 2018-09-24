@@ -31,8 +31,16 @@ describe('UnityCI', () => {
           })
         }
       }
+      const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
+      Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
+        status: 202,
+        text: payloadUpdateBuildTarget
+      })
       const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
-      Build.prototype.build = jest.fn().mockResolvedValue(payloadCreateNewBuild)
+      Build.prototype.build = jest.fn().mockResolvedValue({
+        status: 202,
+        text: payloadCreateNewBuild
+      })
       robot.auth = () => Promise.resolve(github)
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)

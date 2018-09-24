@@ -10,6 +10,10 @@ export default class Build {
     this.api = new UnityCloudBuildAPI()
   }
 
+  async prepareBuild (branch : string, platform : string) : Promise < request.Response > {
+    return this.api.updateBuildTarget(this.config)
+  }
+
   async build () : Promise < request.Response > {
     return this.api.startBuilds({
       orgid: this.config.orgid,

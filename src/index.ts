@@ -14,17 +14,25 @@ export = (app: Application) => {
       path: 'unityci.yaml',
       ref: ''
     })
+
+    let branch = pullRequest.head.ref
     if (pullRequest.head.user.login !== pullRequest.base.user.login) {
       // TODO:: Create PullReq Branch to base Repository
     }
 
-    // TODO:: Create BuiltTarget on UnityCloudBuild
-
-    // TODO:: Build Project on UnityCloudBuild
     const config = jsyaml.load(result.data.content)
     let _build = new Build(config)
-    const result2 = await _build.build()
-    app.log(result2)
+    // TODO:: Update BuiltTarget on UnityCloudBuild
+    const result2 = await _build.prepareBuild(branch, 'standaloneosxuniversal')
+    if (result2.status !== 202) {
+      app.log('prepareBuild return ' + result2.status + ' ' + result2.text)
+    }
+
+    // TODO:: Build Project on UnityCloudBuild
+    const result3 = await _build.build()
+    if (result3.status !== 202) {
+      app.log('prepareBuild return ' + result3.status + ' ' + result3.text)
+    }
 
     // TODO:: Wait response from Unity Cloud Build
     // TODO:: Call Check API

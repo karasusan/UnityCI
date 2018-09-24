@@ -4244,128 +4244,77 @@ export default class UnityCloudBuildAPI {
    * Update build target details
    * @method
    * @name UnityCloudBuildAPI#updateBuildTarget
-   * @param {string} orgid - Organization identifier
-   * @param {string} projectid - Project identifier
-   * @param {string} buildtargetid - unique id auto-generated from the build target name
-   * @param {} options - Options for build target create/update
+   * @param parameters
    */
-  updateBuildTarget(parameters: {
+  updateBuildTarget( parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
     'options': {
       'name': string
-
       'platform': "ios" | "android" | "webplayer" | "webgl" | "standaloneosxintel" | "standaloneosxintel64" | "standaloneosxuniversal" | "standalonewindows" | "standalonewindows64" | "standalonelinux" | "standalonelinux64" | "standalonelinuxuniversal"
-
       'enabled': boolean
-
       'settings': {
         'autoBuild': boolean
-
         'unityVersion': string
-
         'executablename': string
-
         'scm': {
           'type': "git" | "svn" | "p4" | "hg" | "collab" | "oauth"
-
           'branch': string
-
           'subdirectory': string
-
           'client': string
-
         }
-
         'platform': {
           'bundleId': string
-
           'xcodeVersion': string
-
         }
-
         'advanced': {
           'xcode': {
             'useArchiveAndExport': boolean
-
           }
-
           'unity': {
             'preExportMethod': string
-
             'postExportMethod': string
-
             'preBuildScript': string
-
             'postBuildScript': string
-
             'scriptingDefineSymbols': string
-
             'playerExporter': {
               'sceneList': Array < string >
                 | string
-
               'buildOptions': Array < string >
                 | string
-
               'export': boolean
-
             }
-
             'playerSettings': {
               'Android': {
                 'useAPKExpansionFiles': boolean
-
               }
-
             }
-
             'editorUserBuildSettings': {
               'androidBuildSystem': "internal" | "gradle"
-
             }
-
             'assetBundles': {
               'buildBundles': boolean
-
               'basePath': string
-
               'buildAssetBundleOptions': string
-
               'copyToStreamingAssets': boolean
-
               'copyBundlePatterns': Array < string >
                 | string
-
             }
-
             'runUnitTests': boolean
-
             'runEditModeTests': boolean
-
             'runPlayModeTests': boolean
-
             'failedUnitTestFailsBuild': boolean
-
             'unitTestMethod': string
-
             'enableLightBake': boolean
-
           }
-
         }
-
       }
-
       'credentials': {
         'signing': {
           'credentialid': string
-
         }
-
       }
-
     },
     $queryParameters ? : any,
     $domain ? : string

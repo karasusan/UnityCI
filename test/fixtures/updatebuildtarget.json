@@ -1,0 +1,41 @@
+{
+  "name": "Mac",
+  "platform": "webplayer",
+  "buildtargetid": "mac",
+  "enabled": false,
+  "settings": {
+    "autoBuild": false,
+    "unityVersion": "latest",
+    "executablename": "Mac",
+    "scm": {
+      "type": "git"
+    },
+    "platform": {},
+    "advanced": {}
+  },
+  "credentials": {
+    "signing": {}
+  },
+  "links": {
+    "self": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/mac"
+    },
+    "start_builds": {
+      "method": "post",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/mac/builds"
+    },
+    "list_builds": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/mac/builds"
+    },
+    "cancel_builds": {
+      "method": "delete",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/mac/builds"
+    },
+    "polling": {
+      "method": "post",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/mac/polling"
+    }
+  }
+}

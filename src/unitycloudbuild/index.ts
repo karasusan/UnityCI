@@ -1,13 +1,11 @@
-import request from "superagent";
-import {
-  SuperAgentStatic
-} from "superagent";
+import request from 'superagent'
+import { SuperAgentStatic } from 'superagent'
 
-type CallbackHandler = (err: any, res ? : request.Response) => void;
+type CallbackHandler = (err: any, res ? : request.Response) => void
 
 type Logger = {
   log: (line: string) => any
-};
+}
 
 /**
  * This API is intended to be used in conjunction with the Unity Cloud Build
@@ -104,73 +102,73 @@ HTTP Status: 429
  */
 export default class UnityCloudBuildAPI {
 
-  private domain: string = "";
-  private errorHandlers: CallbackHandler[] = [];
+  private domain: string = ""
+  private errorHandlers: CallbackHandler[] = []
 
   constructor(domain ? : string, private logger ? : Logger) {
     if (domain) {
-      this.domain = domain;
+      this.domain = domain
     }
   }
 
   getDomain() {
-    return this.domain;
+    return this.domain
   }
 
   addErrorHandler(handler: CallbackHandler) {
-    this.errorHandlers.push(handler);
+    this.errorHandlers.push(handler)
   }
 
   private request(method: string, url: string, body: any, headers: any, queryParameters: any, form: any, reject: CallbackHandler, resolve: CallbackHandler) {
     if (this.logger) {
-      this.logger.log(`Call ${method} ${url}`);
+      this.logger.log(`Call ${method} ${url}`)
     }
 
-    let req = (request as SuperAgentStatic)(method, url).query(queryParameters);
+    let req = (request as SuperAgentStatic)(method, url).query(queryParameters)
 
     Object.keys(headers).forEach(key => {
-      req.set(key, headers[key]);
-    });
+      req.set(key, headers[key])
+    })
 
     if (body) {
-      req.send(body);
+      req.send(body)
     }
 
     if (typeof(body) === 'object' && !(body.constructor.name === 'Buffer')) {
-      req.set('Content-Type', 'application/json');
+      req.set('Content-Type', 'application/json')
     }
 
     if (Object.keys(form).length > 0) {
-      req.type('form');
-      req.send(form);
+      req.type('form')
+      req.send(form)
     }
 
     req.end((error, response) => {
       if (error || !response.ok) {
-        reject(error);
-        this.errorHandlers.forEach(handler => handler(error));
+        reject(error)
+        this.errorHandlers.forEach(handler => handler(error))
       } else {
-        resolve(response);
+        resolve(response)
       }
-    });
+    })
   }
 
   listUnityVersionsURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/versions/unity';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/versions/unity'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -182,42 +180,42 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/versions/unity';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/versions/unity'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listXcodeVersionsURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/versions/xcode';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/versions/xcode'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -229,24 +227,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/versions/xcode';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/versions/xcode'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getUserSelfURL(parameters: {
@@ -254,21 +252,21 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me'
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -282,28 +280,28 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateUserSelfURL(parameters: {
@@ -314,18 +312,18 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -431,46 +429,46 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getUserApiKeyURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/apikey';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/apikey'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -482,44 +480,44 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/apikey';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/apikey'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   regenApiKeyURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/apikey';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/apikey'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -532,45 +530,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/apikey';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/apikey'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listDevicesForUserURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/devices';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/devices'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -582,24 +580,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/devices';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/devices'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   createDeviceURL(parameters: {
@@ -620,20 +618,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/devices';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/devices'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -748,36 +746,36 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/users/me/devices';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/users/me/devices'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBillingPlansURL(parameters: {
@@ -785,20 +783,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/billingplan';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/billingplan'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -812,31 +810,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/billingplan';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/billingplan'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listHooksForOrgURL(parameters: {
@@ -844,20 +842,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -871,31 +869,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addHookForOrgURL(parameters: {
@@ -914,22 +912,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1071,38 +1069,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getHookURL(parameters: {
@@ -1111,22 +1109,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1142,33 +1140,33 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteHookURL(parameters: {
@@ -1177,22 +1175,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1208,33 +1206,33 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateHookURL(parameters: {
@@ -1254,22 +1252,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1387,37 +1385,37 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   pingHookURL(parameters: {
@@ -1426,24 +1424,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}/ping';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}/ping'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1460,36 +1458,36 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/hooks/{id}/ping';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/hooks/{id}/ping'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getSSHKeyURL(parameters: {
@@ -1497,20 +1495,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/sshkey';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/sshkey'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1524,31 +1522,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/sshkey';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/sshkey'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   regenerateSSHKeyURL(parameters: {
@@ -1556,22 +1554,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/sshkey';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/sshkey'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1586,34 +1584,34 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/sshkey';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/sshkey'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listProjectsForUserURL(parameters: {
@@ -1621,21 +1619,21 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/projects';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/projects'
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1651,28 +1649,28 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/projects';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/projects'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getProjectByUpidURL(parameters: {
@@ -1680,20 +1678,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/projects/{projectupid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/projects/{projectupid}'
 
-    path = path.replace('{projectupid}', `${parameters['projectupid']}`);
+    path = path.replace('{projectupid}', `${parameters['projectupid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1708,31 +1706,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/projects/{projectupid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/projects/{projectupid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{projectupid}', `${parameters['projectupid']}`);
+      path = path.replace('{projectupid}', `${parameters['projectupid']}`)
 
       if (parameters['projectupid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectupid'));
-        return;
+        reject(new Error('Missing required  parameter: projectupid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listProjectsForOrgURL(parameters: {
@@ -1741,23 +1739,23 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1775,35 +1773,35 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addProjectURL(parameters: {
@@ -1889,22 +1887,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -1997,43 +1995,43 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getProjectURL(parameters: {
@@ -2043,25 +2041,25 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2079,42 +2077,42 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateProjectURL(parameters: {
@@ -2201,22 +2199,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2311,47 +2309,47 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   archiveProjectURL(parameters: {
@@ -2360,22 +2358,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2392,38 +2390,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBillingPlansURLWithProjectId(parameters: {
@@ -2432,22 +2430,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/billingplan';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/billingplan'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2463,38 +2461,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/billingplan';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/billingplan'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getSSHKeyURLWithProjectId(parameters: {
@@ -2503,22 +2501,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/sshkey';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/sshkey'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2534,38 +2532,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/sshkey';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/sshkey'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getStatsURL(parameters: {
@@ -2574,22 +2572,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/stats';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/stats'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2605,38 +2603,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/stats';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/stats'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getAuditLogURL(parameters: {
@@ -2647,29 +2645,29 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/auditlog';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/auditlog'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
     if (parameters['perPage'] !== undefined) {
-      queryParameters['per_page'] = parameters['perPage'];
+      queryParameters['per_page'] = parameters['perPage']
     }
 
     if (parameters['page'] !== undefined) {
-      queryParameters['page'] = parameters['page'];
+      queryParameters['page'] = parameters['page']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2689,46 +2687,46 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/auditlog';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/auditlog'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['perPage'] !== undefined) {
-        queryParameters['per_page'] = parameters['perPage'];
+        queryParameters['per_page'] = parameters['perPage']
       }
 
       if (parameters['page'] !== undefined) {
-        queryParameters['page'] = parameters['page'];
+        queryParameters['page'] = parameters['page']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   listHooksForProjectURL(parameters: {
@@ -2737,22 +2735,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2768,38 +2766,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addHookForProjectURL(parameters: {
@@ -2819,24 +2817,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -2980,45 +2978,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getHookURLWithProjectId(parameters: {
@@ -3028,24 +3026,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3063,40 +3061,40 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteHookURLWithProjectId(parameters: {
@@ -3106,24 +3104,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3141,40 +3139,40 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateHookURLWithProjectId(parameters: {
@@ -3195,24 +3193,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3332,44 +3330,44 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   pingHookURLWithProjectId(parameters: {
@@ -3379,26 +3377,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}/ping';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}/ping'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{id}', `${parameters['id']}`);
+    path = path.replace('{id}', `${parameters['id']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3417,43 +3415,43 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}/ping';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/hooks/{id}/ping'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{id}', `${parameters['id']}`);
+      path = path.replace('{id}', `${parameters['id']}`)
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getEnvVariablesForProjectURL(parameters: {
@@ -3462,22 +3460,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/envvars';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/envvars'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3493,38 +3491,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/envvars';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/envvars'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   setEnvVariablesForProjectURL(parameters: {
@@ -3534,22 +3532,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/envvars';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/envvars'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3567,47 +3565,47 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/envvars';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/envvars'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['envvars'] !== undefined) {
-        body = parameters['envvars'];
+        body = parameters['envvars']
       }
 
       if (parameters['envvars'] === undefined) {
-        reject(new Error('Missing required  parameter: envvars'));
-        return;
+        reject(new Error('Missing required  parameter: envvars'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildTargetsURL(parameters: {
@@ -3618,29 +3616,29 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters['includeLastSuccess'] !== undefined) {
-      queryParameters['include_last_success'] = parameters['includeLastSuccess'];
+      queryParameters['include_last_success'] = parameters['includeLastSuccess']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3662,46 +3660,46 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters['includeLastSuccess'] !== undefined) {
-        queryParameters['include_last_success'] = parameters['includeLastSuccess'];
+        queryParameters['include_last_success'] = parameters['includeLastSuccess']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addBuildTargetURL(parameters: {
@@ -3824,24 +3822,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -3972,50 +3970,50 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildTargetURL(parameters: {
@@ -4025,24 +4023,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4060,45 +4058,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateBuildTargetURL(parameters: {
@@ -4222,24 +4220,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4372,54 +4370,54 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteBuildTargetURL(parameters: {
@@ -4429,24 +4427,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4464,45 +4462,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getEnvVariablesForBuildTargetURL(parameters: {
@@ -4512,24 +4510,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4547,45 +4545,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   setEnvVariablesForBuildTargetURL(parameters: {
@@ -4596,24 +4594,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4633,54 +4631,54 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/envvars'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters['envvars'] !== undefined) {
-        body = parameters['envvars'];
+        body = parameters['envvars']
       }
 
       if (parameters['envvars'] === undefined) {
-        reject(new Error('Missing required  parameter: envvars'));
-        return;
+        reject(new Error('Missing required  parameter: envvars'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getAuditLogURLWithProjectId(parameters: {
@@ -4692,31 +4690,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/auditlog';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/auditlog'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
     if (parameters['perPage'] !== undefined) {
-      queryParameters['per_page'] = parameters['perPage'];
+      queryParameters['per_page'] = parameters['perPage']
     }
 
     if (parameters['page'] !== undefined) {
-      queryParameters['page'] = parameters['page'];
+      queryParameters['page'] = parameters['page']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4738,53 +4736,53 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/auditlog';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/auditlog'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters['perPage'] !== undefined) {
-        queryParameters['per_page'] = parameters['perPage'];
+        queryParameters['per_page'] = parameters['perPage']
       }
 
       if (parameters['page'] !== undefined) {
-        queryParameters['page'] = parameters['page'];
+        queryParameters['page'] = parameters['page']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildTargetsForOrgURL(parameters: {
@@ -4794,27 +4792,27 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/buildtargets';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/buildtargets'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters['includeLastSuccess'] !== undefined) {
-      queryParameters['include_last_success'] = parameters['includeLastSuccess'];
+      queryParameters['include_last_success'] = parameters['includeLastSuccess']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4834,39 +4832,39 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/buildtargets';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/buildtargets'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters['includeLastSuccess'] !== undefined) {
-        queryParameters['include_last_success'] = parameters['includeLastSuccess'];
+        queryParameters['include_last_success'] = parameters['includeLastSuccess']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getAllAndroidURL(parameters: {
@@ -4875,22 +4873,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -4910,38 +4908,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addCredentialsAndroidURL(parameters: {
@@ -4955,24 +4953,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5000,86 +4998,86 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'multipart/form-data';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'multipart/form-data'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['label'] !== undefined) {
-        form['label'] = parameters['label'];
+        form['label'] = parameters['label']
       }
 
       if (parameters['label'] === undefined) {
-        reject(new Error('Missing required  parameter: label'));
-        return;
+        reject(new Error('Missing required  parameter: label'))
+        return
       }
 
       if (parameters['file'] !== undefined) {
-        form['file'] = parameters['file'];
+        form['file'] = parameters['file']
       }
 
       if (parameters['file'] === undefined) {
-        reject(new Error('Missing required  parameter: file'));
-        return;
+        reject(new Error('Missing required  parameter: file'))
+        return
       }
 
       if (parameters['alias'] !== undefined) {
-        form['alias'] = parameters['alias'];
+        form['alias'] = parameters['alias']
       }
 
       if (parameters['alias'] === undefined) {
-        reject(new Error('Missing required  parameter: alias'));
-        return;
+        reject(new Error('Missing required  parameter: alias'))
+        return
       }
 
       if (parameters['keypass'] !== undefined) {
-        form['keypass'] = parameters['keypass'];
+        form['keypass'] = parameters['keypass']
       }
 
       if (parameters['keypass'] === undefined) {
-        reject(new Error('Missing required  parameter: keypass'));
-        return;
+        reject(new Error('Missing required  parameter: keypass'))
+        return
       }
 
       if (parameters['storepass'] !== undefined) {
-        form['storepass'] = parameters['storepass'];
+        form['storepass'] = parameters['storepass']
       }
 
       if (parameters['storepass'] === undefined) {
-        reject(new Error('Missing required  parameter: storepass'));
-        return;
+        reject(new Error('Missing required  parameter: storepass'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getOneAndroidURL(parameters: {
@@ -5089,24 +5087,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5124,45 +5122,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateAndroidURL(parameters: {
@@ -5177,24 +5175,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5224,65 +5222,65 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'multipart/form-data';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'multipart/form-data'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters['label'] !== undefined) {
-        form['label'] = parameters['label'];
+        form['label'] = parameters['label']
       }
 
       if (parameters['file'] !== undefined) {
-        form['file'] = parameters['file'];
+        form['file'] = parameters['file']
       }
 
       if (parameters['alias'] !== undefined) {
-        form['alias'] = parameters['alias'];
+        form['alias'] = parameters['alias']
       }
 
       if (parameters['keypass'] !== undefined) {
-        form['keypass'] = parameters['keypass'];
+        form['keypass'] = parameters['keypass']
       }
 
       if (parameters['storepass'] !== undefined) {
-        form['storepass'] = parameters['storepass'];
+        form['storepass'] = parameters['storepass']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteAndroidURL(parameters: {
@@ -5292,24 +5290,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5330,45 +5328,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/android/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getAllIosURL(parameters: {
@@ -5377,22 +5375,22 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5412,38 +5410,38 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   addCredentialsIosURL(parameters: {
@@ -5456,24 +5454,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5500,72 +5498,72 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'multipart/form-data';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'multipart/form-data'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['label'] !== undefined) {
-        form['label'] = parameters['label'];
+        form['label'] = parameters['label']
       }
 
       if (parameters['label'] === undefined) {
-        reject(new Error('Missing required  parameter: label'));
-        return;
+        reject(new Error('Missing required  parameter: label'))
+        return
       }
 
       if (parameters['fileCertificate'] !== undefined) {
-        form['fileCertificate'] = parameters['fileCertificate'];
+        form['fileCertificate'] = parameters['fileCertificate']
       }
 
       if (parameters['fileCertificate'] === undefined) {
-        reject(new Error('Missing required  parameter: fileCertificate'));
-        return;
+        reject(new Error('Missing required  parameter: fileCertificate'))
+        return
       }
 
       if (parameters['fileProvisioningProfile'] !== undefined) {
-        form['fileProvisioningProfile'] = parameters['fileProvisioningProfile'];
+        form['fileProvisioningProfile'] = parameters['fileProvisioningProfile']
       }
 
       if (parameters['fileProvisioningProfile'] === undefined) {
-        reject(new Error('Missing required  parameter: fileProvisioningProfile'));
-        return;
+        reject(new Error('Missing required  parameter: fileProvisioningProfile'))
+        return
       }
 
       if (parameters['certificatePass'] !== undefined) {
-        form['certificatePass'] = parameters['certificatePass'];
+        form['certificatePass'] = parameters['certificatePass']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getOneIosURL(parameters: {
@@ -5575,24 +5573,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5610,45 +5608,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateIosURL(parameters: {
@@ -5662,24 +5660,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5708,61 +5706,61 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'multipart/form-data';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'multipart/form-data'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters['label'] !== undefined) {
-        form['label'] = parameters['label'];
+        form['label'] = parameters['label']
       }
 
       if (parameters['fileCertificate'] !== undefined) {
-        form['fileCertificate'] = parameters['fileCertificate'];
+        form['fileCertificate'] = parameters['fileCertificate']
       }
 
       if (parameters['fileProvisioningProfile'] !== undefined) {
-        form['fileProvisioningProfile'] = parameters['fileProvisioningProfile'];
+        form['fileProvisioningProfile'] = parameters['fileProvisioningProfile']
       }
 
       if (parameters['certificatePass'] !== undefined) {
-        form['certificatePass'] = parameters['certificatePass'];
+        form['certificatePass'] = parameters['certificatePass']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteIosURL(parameters: {
@@ -5772,24 +5770,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+    path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5810,45 +5808,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/credentials/signing/ios/{credentialid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{credentialid}', `${parameters['credentialid']}`);
+      path = path.replace('{credentialid}', `${parameters['credentialid']}`)
 
       if (parameters['credentialid'] === undefined) {
-        reject(new Error('Missing required  parameter: credentialid'));
-        return;
+        reject(new Error('Missing required  parameter: credentialid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteAllBuildArtifactsURL(parameters: {
@@ -5858,24 +5856,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/artifacts';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/artifacts'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5893,45 +5891,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/artifacts';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/artifacts'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   deleteBuildArtifactsURL(parameters: {
@@ -5942,26 +5940,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/artifacts';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/artifacts'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -5981,52 +5979,52 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/artifacts';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/artifacts'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   batchDeleteBuildArtifactsURL(parameters: {
@@ -6050,24 +6048,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/artifacts/delete';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/artifacts/delete'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6102,50 +6100,50 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/artifacts/delete';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/artifacts/delete'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildsURL(parameters: {
@@ -6162,51 +6160,51 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters['perPage'] !== undefined) {
-      queryParameters['per_page'] = parameters['perPage'];
+      queryParameters['per_page'] = parameters['perPage']
     }
 
     if (parameters['page'] !== undefined) {
-      queryParameters['page'] = parameters['page'];
+      queryParameters['page'] = parameters['page']
     }
 
     if (parameters['buildStatus'] !== undefined) {
-      queryParameters['buildStatus'] = parameters['buildStatus'];
+      queryParameters['buildStatus'] = parameters['buildStatus']
     }
 
     if (parameters['platform'] !== undefined) {
-      queryParameters['platform'] = parameters['platform'];
+      queryParameters['platform'] = parameters['platform']
     }
 
     if (parameters['showDeleted'] !== undefined) {
-      queryParameters['showDeleted'] = parameters['showDeleted'];
+      queryParameters['showDeleted'] = parameters['showDeleted']
     }
 
     if (parameters['onlyFavorites'] !== undefined) {
-      queryParameters['onlyFavorites'] = parameters['onlyFavorites'];
+      queryParameters['onlyFavorites'] = parameters['onlyFavorites']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6243,73 +6241,73 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters['perPage'] !== undefined) {
-        queryParameters['per_page'] = parameters['perPage'];
+        queryParameters['per_page'] = parameters['perPage']
       }
 
       if (parameters['page'] !== undefined) {
-        queryParameters['page'] = parameters['page'];
+        queryParameters['page'] = parameters['page']
       }
 
       if (parameters['buildStatus'] !== undefined) {
-        queryParameters['buildStatus'] = parameters['buildStatus'];
+        queryParameters['buildStatus'] = parameters['buildStatus']
       }
 
       if (parameters['platform'] !== undefined) {
-        queryParameters['platform'] = parameters['platform'];
+        queryParameters['platform'] = parameters['platform']
       }
 
       if (parameters['showDeleted'] !== undefined) {
-        queryParameters['showDeleted'] = parameters['showDeleted'];
+        queryParameters['showDeleted'] = parameters['showDeleted']
       }
 
       if (parameters['onlyFavorites'] !== undefined) {
-        queryParameters['onlyFavorites'] = parameters['onlyFavorites'];
+        queryParameters['onlyFavorites'] = parameters['onlyFavorites']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   startBuildsURL(parameters: {
@@ -6333,113 +6331,101 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
-  * Start the build process for this build target (or all targets,
-  if '_all' is specified as the buildtargetid), if there is not one
-  currently in process.
+   * Start the build process for this build target (or all targets,
+   if '_all' is specified as the buildtargetid), if there is not one
+   currently in process.
 
-  If a build is currently in process that information will be related
-  in the 'error' field.
+   If a build is currently in process that information will be related
+   in the 'error' field.
 
-  * @method
-  * @name UnityCloudBuildAPI#startBuilds
-     * @param {string} orgid - Organization identifier
-     * @param {string} projectid - Project identifier
-     * @param {string} buildtargetid - unique id auto-generated from the build target name
-     * @param {} options - Options for starting the builds. You can specify a platform and label only when 
-  starting a local (_local) build. A local build will return immediately and be 
-  marked as successful.
-
-  */
-  startBuilds(parameters: {
+   * @method
+   * @name UnityCloudBuildAPI#startBuilds
+   * @param parameters
+   */
+  startBuilds (parameters: {
     'orgid': string,
     'projectid': string,
     'buildtargetid': string,
     'options' ? : {
       'clean': boolean
-
       'delay': number
-
       'commit': string
-
       'headless': boolean
-
       'label': string
-
       'platform': "ios" | "android" | "webplayer" | "webgl" | "standaloneosxintel" | "standaloneosxintel64" | "standaloneosxuniversal" | "standalonewindows" | "standalonewindows64" | "standalonelinux" | "standalonelinux64" | "standalonelinuxuniversal"
-
     },
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   cancelAllBuildsURL(parameters: {
@@ -6449,24 +6435,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6487,45 +6473,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildURL(parameters: {
@@ -6537,29 +6523,29 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6584,56 +6570,56 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   cancelBuildURL(parameters: {
@@ -6644,26 +6630,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6685,52 +6671,52 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   updateBuildURL(parameters: {
@@ -6747,26 +6733,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6793,61 +6779,61 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters['options'] !== undefined) {
-        body = parameters['options'];
+        body = parameters['options']
       }
 
       if (parameters['options'] === undefined) {
-        reject(new Error('Missing required  parameter: options'));
-        return;
+        reject(new Error('Missing required  parameter: options'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('PUT', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getAuditLogURLWithProjectIdAndNumber(parameters: {
@@ -6860,33 +6846,33 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/auditlog';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/auditlog'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
     if (parameters['perPage'] !== undefined) {
-      queryParameters['per_page'] = parameters['perPage'];
+      queryParameters['per_page'] = parameters['perPage']
     }
 
     if (parameters['page'] !== undefined) {
-      queryParameters['page'] = parameters['page'];
+      queryParameters['page'] = parameters['page']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -6910,60 +6896,60 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/auditlog';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/auditlog'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters['perPage'] !== undefined) {
-        queryParameters['per_page'] = parameters['perPage'];
+        queryParameters['per_page'] = parameters['perPage']
       }
 
       if (parameters['page'] !== undefined) {
-        queryParameters['page'] = parameters['page'];
+        queryParameters['page'] = parameters['page']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildsForOrgURL(parameters: {
@@ -6978,47 +6964,47 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/builds';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/builds'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters['perPage'] !== undefined) {
-      queryParameters['per_page'] = parameters['perPage'];
+      queryParameters['per_page'] = parameters['perPage']
     }
 
     if (parameters['page'] !== undefined) {
-      queryParameters['page'] = parameters['page'];
+      queryParameters['page'] = parameters['page']
     }
 
     if (parameters['buildStatus'] !== undefined) {
-      queryParameters['buildStatus'] = parameters['buildStatus'];
+      queryParameters['buildStatus'] = parameters['buildStatus']
     }
 
     if (parameters['platform'] !== undefined) {
-      queryParameters['platform'] = parameters['platform'];
+      queryParameters['platform'] = parameters['platform']
     }
 
     if (parameters['showDeleted'] !== undefined) {
-      queryParameters['showDeleted'] = parameters['showDeleted'];
+      queryParameters['showDeleted'] = parameters['showDeleted']
     }
 
     if (parameters['onlyFavorites'] !== undefined) {
-      queryParameters['onlyFavorites'] = parameters['onlyFavorites'];
+      queryParameters['onlyFavorites'] = parameters['onlyFavorites']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7050,59 +7036,59 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/builds';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/builds'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters['perPage'] !== undefined) {
-        queryParameters['per_page'] = parameters['perPage'];
+        queryParameters['per_page'] = parameters['perPage']
       }
 
       if (parameters['page'] !== undefined) {
-        queryParameters['page'] = parameters['page'];
+        queryParameters['page'] = parameters['page']
       }
 
       if (parameters['buildStatus'] !== undefined) {
-        queryParameters['buildStatus'] = parameters['buildStatus'];
+        queryParameters['buildStatus'] = parameters['buildStatus']
       }
 
       if (parameters['platform'] !== undefined) {
-        queryParameters['platform'] = parameters['platform'];
+        queryParameters['platform'] = parameters['platform']
       }
 
       if (parameters['showDeleted'] !== undefined) {
-        queryParameters['showDeleted'] = parameters['showDeleted'];
+        queryParameters['showDeleted'] = parameters['showDeleted']
       }
 
       if (parameters['onlyFavorites'] !== undefined) {
-        queryParameters['onlyFavorites'] = parameters['onlyFavorites'];
+        queryParameters['onlyFavorites'] = parameters['onlyFavorites']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   cancelBuildsForOrgURL(parameters: {
@@ -7110,20 +7096,20 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/builds';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/builds'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7139,31 +7125,31 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/builds';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/builds'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getBuildLogURL(parameters: {
@@ -7179,45 +7165,45 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/log';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/log'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
     if (parameters['offsetlines'] !== undefined) {
-      queryParameters['offsetlines'] = parameters['offsetlines'];
+      queryParameters['offsetlines'] = parameters['offsetlines']
     }
 
     if (parameters['linenumbers'] !== undefined) {
-      queryParameters['linenumbers'] = parameters['linenumbers'];
+      queryParameters['linenumbers'] = parameters['linenumbers']
     }
 
     if (parameters['lastLineNumber'] !== undefined) {
-      queryParameters['lastLineNumber'] = parameters['lastLineNumber'];
+      queryParameters['lastLineNumber'] = parameters['lastLineNumber']
     }
 
     if (parameters['compact'] !== undefined) {
-      queryParameters['compact'] = parameters['compact'];
+      queryParameters['compact'] = parameters['compact']
     }
 
     if (parameters['withHtml'] !== undefined) {
-      queryParameters['withHtml'] = parameters['withHtml'];
+      queryParameters['withHtml'] = parameters['withHtml']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7248,72 +7234,72 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/log';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/log'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters['offsetlines'] !== undefined) {
-        queryParameters['offsetlines'] = parameters['offsetlines'];
+        queryParameters['offsetlines'] = parameters['offsetlines']
       }
 
       if (parameters['linenumbers'] !== undefined) {
-        queryParameters['linenumbers'] = parameters['linenumbers'];
+        queryParameters['linenumbers'] = parameters['linenumbers']
       }
 
       if (parameters['lastLineNumber'] !== undefined) {
-        queryParameters['lastLineNumber'] = parameters['lastLineNumber'];
+        queryParameters['lastLineNumber'] = parameters['lastLineNumber']
       }
 
       if (parameters['compact'] !== undefined) {
-        queryParameters['compact'] = parameters['compact'];
+        queryParameters['compact'] = parameters['compact']
       }
 
       if (parameters['withHtml'] !== undefined) {
-        queryParameters['withHtml'] = parameters['withHtml'];
+        queryParameters['withHtml'] = parameters['withHtml']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getShareURL(parameters: {
@@ -7324,26 +7310,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7363,52 +7349,52 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   createShareURL(parameters: {
@@ -7419,28 +7405,28 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    queryParameters = {};
+    queryParameters = {}
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7461,55 +7447,55 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      form = queryParameters;
-      queryParameters = {};
+      form = queryParameters
+      queryParameters = {}
 
-      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('POST', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   revokeShareURL(parameters: {
@@ -7520,26 +7506,26 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
 
-    path = path.replace('{orgid}', `${parameters['orgid']}`);
+    path = path.replace('{orgid}', `${parameters['orgid']}`)
 
-    path = path.replace('{projectid}', `${parameters['projectid']}`);
+    path = path.replace('{projectid}', `${parameters['projectid']}`)
 
-    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+    path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
-    path = path.replace('{number}', `${parameters['number']}`);
+    path = path.replace('{number}', `${parameters['number']}`)
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7559,52 +7545,52 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/orgs/{orgid}/projects/{projectid}/buildtargets/{buildtargetid}/builds/{number}/share'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{orgid}', `${parameters['orgid']}`);
+      path = path.replace('{orgid}', `${parameters['orgid']}`)
 
       if (parameters['orgid'] === undefined) {
-        reject(new Error('Missing required  parameter: orgid'));
-        return;
+        reject(new Error('Missing required  parameter: orgid'))
+        return
       }
 
-      path = path.replace('{projectid}', `${parameters['projectid']}`);
+      path = path.replace('{projectid}', `${parameters['projectid']}`)
 
       if (parameters['projectid'] === undefined) {
-        reject(new Error('Missing required  parameter: projectid'));
-        return;
+        reject(new Error('Missing required  parameter: projectid'))
+        return
       }
 
-      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`);
+      path = path.replace('{buildtargetid}', `${parameters['buildtargetid']}`)
 
       if (parameters['buildtargetid'] === undefined) {
-        reject(new Error('Missing required  parameter: buildtargetid'));
-        return;
+        reject(new Error('Missing required  parameter: buildtargetid'))
+        return
       }
 
-      path = path.replace('{number}', `${parameters['number']}`);
+      path = path.replace('{number}', `${parameters['number']}`)
 
       if (parameters['number'] === undefined) {
-        reject(new Error('Missing required  parameter: number'));
-        return;
+        reject(new Error('Missing required  parameter: number'))
+        return
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('DELETE', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getShareMetadataURL(parameters: {
@@ -7613,23 +7599,23 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/shares/{shareid}';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/shares/{shareid}'
 
-    path = path.replace('{shareid}', `${parameters['shareid']}`);
+    path = path.replace('{shareid}', `${parameters['shareid']}`)
     if (parameters['include'] !== undefined) {
-      queryParameters['include'] = parameters['include'];
+      queryParameters['include'] = parameters['include']
     }
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7735,53 +7721,53 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/shares/{shareid}';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/shares/{shareid}'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
-      path = path.replace('{shareid}', `${parameters['shareid']}`);
+      path = path.replace('{shareid}', `${parameters['shareid']}`)
 
       if (parameters['shareid'] === undefined) {
-        reject(new Error('Missing required  parameter: shareid'));
-        return;
+        reject(new Error('Missing required  parameter: shareid'))
+        return
       }
 
       if (parameters['include'] !== undefined) {
-        queryParameters['include'] = parameters['include'];
+        queryParameters['include'] = parameters['include']
       }
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
   getStatusURL(parameters: {
     $queryParameters ? : any,
     $domain ? : string
   }): string {
-    let queryParameters: any = {};
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/status';
+    let queryParameters: any = {}
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/status'
 
     if (parameters.$queryParameters) {
       Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-      });
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
 
-    let keys = Object.keys(queryParameters);
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
   }
 
   /**
@@ -7793,24 +7779,24 @@ export default class UnityCloudBuildAPI {
     $queryParameters ? : any,
     $domain ? : string
   }): Promise < request.Response > {
-    const domain = parameters.$domain ? parameters.$domain : this.domain;
-    let path = '/status';
-    let body: any;
-    let queryParameters: any = {};
-    let headers: any = {};
-    let form: any = {};
+    const domain = parameters.$domain ? parameters.$domain : this.domain
+    let path = '/status'
+    let body: any
+    let queryParameters: any = {}
+    let headers: any = {}
+    let form: any = {}
     return new Promise((resolve, reject) => {
-      headers['Accept'] = 'application/json, text/plain, text/html, text/csv';
-      headers['Content-Type'] = 'application/json';
+      headers['Accept'] = 'application/json, text/plain, text/html, text/csv'
+      headers['Content-Type'] = 'application/json'
 
       if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-          queryParameters[parameterName] = parameters.$queryParameters[parameterName];
-        });
+          queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
       }
 
-      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve);
-    });
+      this.request('GET', domain + path, body, headers, queryParameters, form, reject, resolve)
+    })
   }
 
 }

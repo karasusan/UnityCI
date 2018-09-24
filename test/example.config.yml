@@ -1,8 +1,3 @@
-comment: test
-issueConfigs:
-- content:
-  - 内容1
-  - 内容2
-  - "🐶"
-- content:
-  - "🐱"
+orgid: abcde
+projectid: abc
+buildtargetid: aaaaa

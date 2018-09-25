@@ -39,8 +39,13 @@ export = (app: Application) => {
     await context.github.checks.create({
       owner: repository.owner.login,
       repo: repository.name,
-      name: 'Unity CI - Pull Request',
-      head_sha: pullRequest.head.sha
+      name: 'unityci',
+      head_sha: pullRequest.head.sha,
+      status: 'completed',
+      output: {
+        title: 'Unity CI - Pull Request',
+        summary: 'Build Passed'
+      }
     })
   })
 }

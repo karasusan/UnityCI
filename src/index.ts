@@ -7,6 +7,20 @@ export = (app: Application) => {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
 
+    // TODO:: Wait response from Unity Cloud Build
+    // TODO:: Call Check API
+    await context.github.checks.create({
+      owner: repository.owner.login,
+      repo: repository.name,
+      name: 'unityci',
+      head_sha: pullRequest.head.sha,
+      status: 'in_progress',
+      output: {
+        title: 'Unity CI - Pull Request',
+        summary: 'Build Passed'
+      }
+    })
+
     // TODO:: Load unityci.yaml from Repository
     const result = await context.github.repos.getContent({
       owner: repository.owner.login,

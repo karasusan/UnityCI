@@ -24,7 +24,7 @@ export = (app: Application) => {
       path: 'unityci.yaml',
       ref: ''
     })
-    if (result.status === 404) {
+    if (result1.status === 404) {
       app.log('unityci.yaml not found' + result1.status + ' ' + result1.data)
       return
     }

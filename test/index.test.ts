@@ -51,6 +51,7 @@ describe('UnityCI', () => {
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalled()
+      expect(github.checks.update).toHaveBeenCalledTimes(2)
     })
   })
 })

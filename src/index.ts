@@ -24,7 +24,7 @@ export = (app: Application) => {
       path: 'unityci.yaml',
       ref: ''
     })
-    if (result.status !== 404) {
+    if (result.status === 404) {
       app.log('unityci.yaml not found' + result1.status + ' ' + result1.data)
       return
     }
@@ -64,11 +64,11 @@ export = (app: Application) => {
 
     // TODO:: Wait response from Unity Cloud Build
     // TODO:: Call Check API
-    await context.github.checks.create({
+    await context.github.checks.update({
       owner: repository.owner.login,
       repo: repository.name,
-      name: 'unityci',
-      head_sha: pullRequest.head.sha,
+      check_run_id: checkRunId.toString(),
+      name: 'Unity CI - Pull Request',
       status: 'completed',
       output: {
         title: 'Unity CI - Pull Request',

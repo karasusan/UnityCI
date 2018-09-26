@@ -1,3 +1,14 @@
+## Unity CI
+
+**Unity CI** is a [Github App](https://developer.github.com/apps/about-apps) for Continuous Integration with [Unity Cloud Build](https://unity3d.com/unity/features/cloud-build).
+
+This product made with [Probot](https://probot.github.io).
+
+## Build Status
+|Travis CI|
+|---------|
+|[![Build Status](https://travis-ci.org/karasusan/UnityCI.svg?branch=master)](https://travis-ci.org/karasusan/UnityCI)|
+
 **UNDER CONSTRUCTION**
 
 <!--

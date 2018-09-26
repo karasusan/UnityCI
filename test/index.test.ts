@@ -21,7 +21,13 @@ describe('UnityCI', () => {
       const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
       github = {
         checks: {
-          create: jest.fn().mockResolvedValue(null)
+          create: jest.fn().mockResolvedValue({
+            data: {
+              id: 1
+            }
+          }),
+          update: jest.fn().mockResolvedValue(null)
+
         },
         repos: {
           getContent: jest.fn().mockResolvedValue({

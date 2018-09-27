@@ -24,8 +24,20 @@ export = (app: Application) => {
       path: 'unityci.yaml',
       ref: ''
     })
+    // unityci.yaml not found
     if (result1.status === 404) {
-      app.log('unityci.yaml not found' + result1.status + ' ' + result1.data)
+      await context.github.checks.update({
+        owner: repository.owner.login,
+        repo: repository.name,
+        check_run_id: checkRunId.toString(),
+        name: 'Unity CI - Pull Request',
+        status: 'completed',
+        conclusion: 'neutral',
+        output: {
+          title: 'CI was not work',
+          summary: 'unityci.yaml not found.'
+        }
+      })
       return
     }
 

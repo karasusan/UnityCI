@@ -50,7 +50,7 @@ describe('UnityCI', () => {
       robot.auth = () => Promise.resolve(github)
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
-      expect(github.checks.create).toHaveBeenCalled()
+      expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.checks.update).toHaveBeenCalledTimes(2)
     })
     it('unityci.yaml not found', async () => {
@@ -75,8 +75,12 @@ describe('UnityCI', () => {
       robot.auth = () => Promise.resolve(github)
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
-      expect(github.checks.create).toHaveBeenCalled()
-      expect(github.checks.update).toHaveBeenCalledTimes(0)
+      expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.checks.update).toHaveBeenCalledTimes(1)
+      expect(github.checks.update.mock.calls[0][0]).toMatchObject({
+        status: 'completed',
+        conclusion: 'neutral'
+      })
     })
   })
 })

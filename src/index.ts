@@ -7,8 +7,7 @@ export = (app: Application) => {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
 
-    // TODO:: Wait response from Unity Cloud Build
-    // TODO:: Call Check API
+    // Call Check API
     const result = await context.github.checks.create({
       owner: repository.owner.login,
       repo: repository.name,
@@ -17,12 +16,17 @@ export = (app: Application) => {
     })
     const checkRunId = result.data.id
 
-    // TODO:: Load unityci.yaml from Repository
+    let branch = pullRequest.head.ref
+    if (pullRequest.head.user.login !== pullRequest.base.user.login) {
+      // TODO:: Create PullReq Branch to base Repository
+    }
+    // Load unityci.yaml from Repository
+
     const result1 = await context.github.repos.getContent({
       owner: repository.owner.login,
       repo: repository.name,
       path: '.unityci.yml',
-      ref: ''
+      ref: branch
     })
     // unityci.yaml not found
     if (result1.status === 404) {
@@ -54,10 +58,6 @@ export = (app: Application) => {
         summary: 'This build is in progress'
       }
     })
-    let branch = pullRequest.head.ref
-    if (pullRequest.head.user.login !== pullRequest.base.user.login) {
-      // TODO:: Create PullReq Branch to base Repository
-    }
 
     const config = jsyaml.load(result1.data.content)
     let _build = new Build(config)

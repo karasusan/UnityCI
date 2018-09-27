@@ -21,7 +21,7 @@ export = (app: Application) => {
     const result1 = await context.github.repos.getContent({
       owner: repository.owner.login,
       repo: repository.name,
-      path: 'unityci.yaml',
+      path: '.unityci.yml',
       ref: ''
     })
     // unityci.yaml not found

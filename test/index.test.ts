@@ -53,7 +53,7 @@ describe('UnityCI', () => {
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.checks.update).toHaveBeenCalledTimes(2)
     })
-    it('unityci.yaml not found', async () => {
+    it('.unityci.yml not found', async () => {
       github = {
         checks: {
           create: jest.fn().mockResolvedValue({

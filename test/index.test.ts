@@ -51,6 +51,7 @@ describe('UnityCI', () => {
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.repos.getContent).toHaveBeenCalledTimes(1)
       expect(github.checks.update).toHaveBeenCalledTimes(2)
     })
     it('.unityci.yml not found', async () => {
@@ -76,6 +77,7 @@ describe('UnityCI', () => {
       const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.repos.getContent).toHaveBeenCalledTimes(1)
       expect(github.checks.update).toHaveBeenCalledTimes(1)
       expect(github.checks.update.mock.calls[0][0]).toMatchObject({
         status: 'completed',

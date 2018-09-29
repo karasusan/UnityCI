@@ -1,12 +1,9 @@
-import jsyaml from 'js-yaml'
 import UnityCloudBuildAPI from './unitycloudbuild'
 import request from 'superagent' // eslint-disable-line
 
 export default class Build {
-  private config: any // eslint-disable-line
   private api: UnityCloudBuildAPI // eslint-disable-line
-  constructor (content: string) {
-    this.config = jsyaml.load(content)
+  constructor (private config: any) {
     this.api = new UnityCloudBuildAPI(this.config.url, undefined, this.config.apikey)
   }
 

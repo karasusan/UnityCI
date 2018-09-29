@@ -17,7 +17,7 @@ describe('UnityCI', () => {
   })
 
   describe('pull request open trigger build project', () => {
-    it('without default config', async () => {
+    it('All Pass', async () => {
       const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
       github = {
         checks: {
@@ -53,8 +53,14 @@ describe('UnityCI', () => {
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
       expect(github.checks.update).toHaveBeenCalledTimes(2)
+      expect(github.checks.update.mock.calls[1][0]).toMatchObject({
+        status: 'completed',
+        conclusion: 'success'
+      })
+      expect(Build.prototype.prepareBuild).toHaveBeenCalledTimes(1)
+      expect(Build.prototype.build).toHaveBeenCalledTimes(1)
     })
-    it('.unityci.yml not found', async () => {
+    it('Config File Not Found', async () => {
       github = {
         checks: {
           create: jest.fn().mockResolvedValue({
@@ -77,6 +83,43 @@ describe('UnityCI', () => {
         status: 'completed',
         conclusion: 'neutral'
       })
+    })
+    it('Prepare Build Failed', async () => {
+      const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+      github = {
+        checks: {
+          create: jest.fn().mockResolvedValue({
+            data: {
+              id: 1
+            }
+          }),
+          update: jest.fn().mockResolvedValue(null)
+
+        },
+        repos: {
+          getContent: jest.fn().mockResolvedValue({
+            data: {
+              content: Buffer.from(config).toString('base64')
+            }
+          })
+        }
+      }
+      const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
+      Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
+        status: 400,
+        text: payloadUpdateBuildTarget
+      })
+      robot.auth = () => Promise.resolve(github)
+      const payloadPullrequest = require('./fixtures/pullrequest.event.json')
+      await robot.receive(payloadPullrequest)
+      expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.repos.getContent).toHaveBeenCalledTimes(1)
+      expect(github.checks.update).toHaveBeenCalledTimes(2)
+      expect(github.checks.update.mock.calls[1][0]).toMatchObject({
+        status: 'completed',
+        conclusion: 'failure'
+      })
+      expect(Build.prototype.prepareBuild).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -1,6 +1,8 @@
 import { Application } from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 
+const nameCheck = 'Unity CI - Pull Request'
+
 export = (app: Application) => {
   app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
     const pullRequest = context.payload.pull_request
@@ -13,25 +15,22 @@ export = (app: Application) => {
         head_sha: pullRequest.head.sha,
         owner: repository.owner.login,
         repo: repository.name,
-        name: 'Unity CI - Pull Request',
+        name: nameCheck,
         status: 'completed',
         conclusion: 'neutral',
         completed_at: new Date().toISOString(),
         output: {
           title: 'CI was not work',
-          summary: 'unityci.yaml not found.'
+          summary: 'unityci.yml not found.'
         }
       })
       return
     }
-    const apikey = config.unitycloudbuild_apikey
-    app.log(apikey)
-
     // Call Check API
     const result = await context.github.checks.create({
       owner: repository.owner.login,
       repo: repository.name,
-      name: 'Unity CI - Pull Request',
+      name: nameCheck,
       head_sha: pullRequest.head.sha
     })
     const checkRunId = result.data.id
@@ -41,13 +40,12 @@ export = (app: Application) => {
       // TODO:: Create PullReq Branch to base Repository
     }
 
-    // TODO:: Wait response from Unity Cloud Build
-    // TODO:: Call Check API
+    // Call Check API
     await context.github.checks.update({
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: checkRunId.toString(),
-      name: 'Unity CI - Pull Request',
+      name: nameCheck,
       status: 'in_progress',
       output: {
         title: 'In Progress',
@@ -58,15 +56,42 @@ export = (app: Application) => {
     let _build = new Build(config)
     // TODO:: Update BuiltTarget on UnityCloudBuild
     const result2 = await _build.prepareBuild(branch, 'standaloneosxuniversal')
+
+    // Build failed
     if (result2.status !== 202) {
-      app.log('prepareBuild return ' + result2.status + ' ' + result2.text)
+      await context.github.checks.update({
+        owner: repository.owner.login,
+        repo: repository.name,
+        check_run_id: checkRunId.toString(),
+        name: nameCheck,
+        status: 'completed',
+        conclusion: 'failure',
+        completed_at: new Date().toISOString(),
+        output: {
+          title: 'Build Failed',
+          summary: result2.status.toString() + ' ' + result2.body
+        }
+      })
       return
     }
 
     // TODO:: Build Project on UnityCloudBuild
     const result3 = await _build.build()
     if (result3.status !== 202) {
-      app.log('prepareBuild return ' + result3.status + ' ' + result3.text)
+      await context.github.checks.update({
+        owner: repository.owner.login,
+        repo: repository.name,
+        check_run_id: checkRunId.toString(),
+        name: nameCheck,
+        status: 'completed',
+        conclusion: 'failure',
+        completed_at: new Date().toISOString(),
+        output: {
+          title: 'Build Failed',
+          summary: result3.status.toString() + ' ' + result3.body
+        }
+      })
+      return
     }
 
     // TODO:: Wait response from Unity Cloud Build
@@ -77,6 +102,8 @@ export = (app: Application) => {
       check_run_id: checkRunId.toString(),
       name: 'Unity CI - Pull Request',
       status: 'completed',
+      conclusion: 'success',
+      completed_at: new Date().toISOString(),
       output: {
         title: 'Unity CI - Pull Request',
         summary: 'Build Passed'

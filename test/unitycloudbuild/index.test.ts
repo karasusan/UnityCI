@@ -1,21 +1,26 @@
 import UnityCloudBuildAPI from '../../src/unitycloudbuild'
+import * as path from 'path'
+import * as fs from 'fs'
+import yaml from 'js-yaml'
+
+var nock = require('nock')
+
+const url = 'https://build-api.cloud.unity3d.com'
+const textConfig = fs.readFileSync(path.resolve(__dirname, '../../test/example.config.yml'), 'utf-8')
+const config = yaml.load(textConfig)
+//const apiKey = config.unitycloudbuild_apikey
+const api: UnityCloudBuildAPI = new UnityCloudBuildAPI(url)
 
 describe('UnityCloudBuild', () => {
-  let github : any
-
   beforeEach(() => {
-    github = jest.fn()
-    //UnityCloudBuildAPI.auth()
   })
 
-  it('extracts the right information', () => {
-    //expect(notifier.repo).toMatch({ owner: 'foo', repo: 'bar' })
-    expect(github).not.toHaveBeenCalled()
-  })
+  it('updateBuildTarget', async () => {
+    nock(url)
+      .put(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${config.buildtargetid}`, config.option)
+      .reply(200, {})
 
-  describe('build', () => {
-    it('build branch succeed', async () => {
-      console.log(UnityCloudBuildAPI)
-    })
+    const result = await api.updateBuildTarget(config)
+    expect(result.status).toBe(200)
   })
 })

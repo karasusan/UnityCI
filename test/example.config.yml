@@ -2,3 +2,8 @@ unitycloudbuild_apikey: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 orgid: abcde
 projectid: abc
 buildtargetid: aaaaa
+options:
+  name: aaa
+  platform: standaloneosxintel64
+  enabled: boolean
+

@@ -1,11 +1,31 @@
 import { Application } from 'probot' // eslint-disable-line
 import { default as Build } from './build'
-import jsyaml from 'js-yaml'
 
 export = (app: Application) => {
   app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
+    // Load unityci.yaml from Repository
+    const config = await context.config('unityci.yml')
+    // unityci.yaml not found
+    if (!config) {
+      await context.github.checks.create({
+        head_sha: pullRequest.head.sha,
+        owner: repository.owner.login,
+        repo: repository.name,
+        name: 'Unity CI - Pull Request',
+        status: 'completed',
+        conclusion: 'neutral',
+        completed_at: new Date().toISOString(),
+        output: {
+          title: 'CI was not work',
+          summary: 'unityci.yaml not found.'
+        }
+      })
+      return
+    }
+    const apikey = config.unitycloudbuild_apikey
+    app.log(apikey)
 
     // Call Check API
     const result = await context.github.checks.create({
@@ -19,30 +39,6 @@ export = (app: Application) => {
     let branch = pullRequest.head.ref
     if (pullRequest.head.user.login !== pullRequest.base.user.login) {
       // TODO:: Create PullReq Branch to base Repository
-    }
-    // Load unityci.yaml from Repository
-
-    const result1 = await context.github.repos.getContent({
-      owner: repository.owner.login,
-      repo: repository.name,
-      path: '.unityci.yml',
-      ref: branch
-    })
-    // unityci.yaml not found
-    if (result1.status === 404) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        name: 'Unity CI - Pull Request',
-        status: 'completed',
-        conclusion: 'neutral',
-        output: {
-          title: 'CI was not work',
-          summary: 'unityci.yaml not found.'
-        }
-      })
-      return
     }
 
     // TODO:: Wait response from Unity Cloud Build
@@ -59,7 +55,6 @@ export = (app: Application) => {
       }
     })
 
-    const config = jsyaml.load(result1.data.content)
     let _build = new Build(config)
     // TODO:: Update BuiltTarget on UnityCloudBuild
     const result2 = await _build.prepareBuild(branch, 'standaloneosxuniversal')

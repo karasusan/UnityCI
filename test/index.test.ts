@@ -32,7 +32,7 @@ describe('UnityCI', () => {
         repos: {
           getContent: jest.fn().mockResolvedValue({
             data: {
-              content: config
+              content: Buffer.from(config).toString('base64')
             }
           })
         }
@@ -65,12 +65,7 @@ describe('UnityCI', () => {
           update: jest.fn().mockResolvedValue(null)
         },
         repos: {
-          getContent: jest.fn().mockResolvedValue({
-            status: 404,
-            data: {
-              content: jest.fn().mockResolvedValue(null)
-            }
-          })
+          getContent: jest.fn().mockImplementation(() => { throw Object({code: 404}) })
         }
       }
       robot.auth = () => Promise.resolve(github)
@@ -78,8 +73,7 @@ describe('UnityCI', () => {
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(1)
-      expect(github.checks.update.mock.calls[0][0]).toMatchObject({
+      expect(github.checks.create.mock.calls[0][0]).toMatchObject({
         status: 'completed',
         conclusion: 'neutral'
       })

@@ -1,4 +1,5 @@
-unitycloudbuild_apikey: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+url: https://build-api.cloud.unity3d.com
+apikey: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 orgid: abcde
 projectid: abc
 buildtargetid: aaaaa

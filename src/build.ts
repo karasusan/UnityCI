@@ -7,7 +7,7 @@ export default class Build {
   private api: UnityCloudBuildAPI // eslint-disable-line
   constructor (content: string) {
     this.config = jsyaml.load(content)
-    this.api = new UnityCloudBuildAPI()
+    this.api = new UnityCloudBuildAPI(this.config.url, undefined, this.config.apikey)
   }
 
   async prepareBuild (branch : string, platform : string) : Promise < request.Response > {

@@ -105,7 +105,7 @@ export default class UnityCloudBuildAPI {
   private domain: string = ""
   private errorHandlers: CallbackHandler[] = []
 
-  constructor(domain ? : string, private logger ? : Logger) {
+  constructor(domain ? : string, private logger ? : Logger, private apikey? : string) {
     if (domain) {
       this.domain = domain
     }
@@ -125,6 +125,9 @@ export default class UnityCloudBuildAPI {
     }
 
     let req = (request as SuperAgentStatic)(method, url).query(queryParameters)
+
+    //Add APIKEY to HeaderParameter
+    headers['Authorization'] = `Basic ${this.apikey}`
 
     Object.keys(headers).forEach(key => {
       req.set(key, headers[key])

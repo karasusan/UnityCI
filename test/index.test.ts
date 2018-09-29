@@ -6,6 +6,11 @@ const app = require('../src/index')
 
 jest.mock('../src/build')
 
+const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
+const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
+const payloadPullrequest = require('./fixtures/pullrequest.event.json')
+
 describe('UnityCI', () => {
   let robot: Application
   let github: any
@@ -18,7 +23,6 @@ describe('UnityCI', () => {
 
   describe('pull request open trigger build project', () => {
     it('All Pass', async () => {
-      const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
       github = {
         checks: {
           create: jest.fn().mockResolvedValue({
@@ -37,18 +41,15 @@ describe('UnityCI', () => {
           })
         }
       }
-      const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
       Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
         status: 202,
         text: payloadUpdateBuildTarget
       })
-      const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
       Build.prototype.build = jest.fn().mockResolvedValue({
         status: 202,
         text: payloadCreateNewBuild
       })
       robot.auth = () => Promise.resolve(github)
-      const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
@@ -75,7 +76,6 @@ describe('UnityCI', () => {
         }
       }
       robot.auth = () => Promise.resolve(github)
-      const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
@@ -85,7 +85,6 @@ describe('UnityCI', () => {
       })
     })
     it('Prepare Build Failed', async () => {
-      const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
       github = {
         checks: {
           create: jest.fn().mockResolvedValue({
@@ -104,13 +103,11 @@ describe('UnityCI', () => {
           })
         }
       }
-      const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
       Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
         status: 400,
         text: payloadUpdateBuildTarget
       })
       robot.auth = () => Promise.resolve(github)
-      const payloadPullrequest = require('./fixtures/pullrequest.event.json')
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(1)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)

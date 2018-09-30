@@ -2,11 +2,13 @@ import { Application } from 'probot'
 import { default as Build } from '../src/build'
 import * as path from 'path'
 import * as fs from 'fs'
+import yaml from 'js-yaml'
 const app = require('../src/index')
 
 jest.mock('../src/build')
 
-const config = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
@@ -36,7 +38,7 @@ describe('UnityCI', () => {
         repos: {
           getContent: jest.fn().mockResolvedValue({
             data: {
-              content: Buffer.from(config).toString('base64')
+              content: Buffer.from(textConfig).toString('base64')
             }
           })
         }
@@ -58,8 +60,8 @@ describe('UnityCI', () => {
         status: 'completed',
         conclusion: 'success'
       })
-      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
-      expect(Build.prototype.build).toHaveBeenCalledTimes(1)
+      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(config.matrix.length)
+      expect(Build.prototype.build).toHaveBeenCalledTimes(config.matrix.length)
     })
     it('Config File Not Found', async () => {
       github = {
@@ -98,7 +100,7 @@ describe('UnityCI', () => {
         repos: {
           getContent: jest.fn().mockResolvedValue({
             data: {
-              content: Buffer.from(config).toString('base64')
+              content: Buffer.from(textConfig).toString('base64')
             }
           })
         }

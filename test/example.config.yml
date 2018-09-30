@@ -7,16 +7,30 @@
 #      general configuration      #
 #---------------------------------#
 
-# Unity Cloud Build
+# URL for Unity Cloud Build
 url: https://build-api.cloud.unity3d.com/api/v1
+
+# API key for Unity Cloud Build
+# You can find your API key in the Unity Cloud Services portal by clicking on 'Cloud Build Preferences' in the sidebar.
 apikey: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
-# Build Target
+# Build Target for Unity Cloud Build
 orgid: abcde
 projectid: abc
 buildtargetid: aaaaa
 options:
   name: aaa
-  platform: standaloneosxintel64
-  enabled: boolean
+  platform: standaloneosxuniversal
+  enabled: true
+  settings:
+    autoBuild: false
+    unityVersion: latest2018_2
+    executablename: Test
+    scm:
+      type: git
+      branch: master
 
+# Check different combinations of build flags
+matrix:
+  - platform: standaloneosxuniversal
+  - platform: standalonewindows64

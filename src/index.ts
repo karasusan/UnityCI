@@ -53,45 +53,47 @@ export = (app: Application) => {
       }
     })
 
-    let _build = new Build(config, app.log)
-    // TODO:: Update BuiltTarget on UnityCloudBuild
-    const resultPrepareBuild = await _build.prepareBuildTarget(branch, 'standaloneosxuniversal')
+    for (const param of config.matrix) {
+      let _build = new Build(config, app.log)
+      // TODO:: Update BuiltTarget on UnityCloudBuild
+      const resultPrepareBuild = await _build.prepareBuildTarget(branch, param.platform)
 
-    // Build failed
-    if (resultPrepareBuild.status !== 202) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        name: nameCheck,
-        status: 'completed',
-        conclusion: 'failure',
-        completed_at: new Date().toISOString(),
-        output: {
-          title: 'Build Failed',
-          summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.body
-        }
-      })
-      return
-    }
+      // Build failed
+      if (resultPrepareBuild.status !== 202) {
+        await context.github.checks.update({
+          owner: repository.owner.login,
+          repo: repository.name,
+          check_run_id: checkRunId.toString(),
+          name: nameCheck,
+          status: 'completed',
+          conclusion: 'failure',
+          completed_at: new Date().toISOString(),
+          output: {
+            title: 'Build Failed',
+            summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.body
+          }
+        })
+        return
+      }
 
-    // TODO:: Build Project on UnityCloudBuild
-    const result3 = await _build.build(branch, 'standaloneosxuniversal')
-    if (result3.status !== 202) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        name: nameCheck,
-        status: 'completed',
-        conclusion: 'failure',
-        completed_at: new Date().toISOString(),
-        output: {
-          title: 'Build Failed',
-          summary: result3.status.toString() + ' ' + result3.body
-        }
-      })
-      return
+      // TODO:: Build Project on UnityCloudBuild
+      const result3 = await _build.build(branch, param.platform)
+      if (result3.status !== 202) {
+        await context.github.checks.update({
+          owner: repository.owner.login,
+          repo: repository.name,
+          check_run_id: checkRunId.toString(),
+          name: nameCheck,
+          status: 'completed',
+          conclusion: 'failure',
+          completed_at: new Date().toISOString(),
+          output: {
+            title: 'Build Failed',
+            summary: result3.status.toString() + ' ' + result3.body
+          }
+        })
+        return
+      }
     }
 
     // TODO:: Wait response from Unity Cloud Build
@@ -100,12 +102,12 @@ export = (app: Application) => {
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: checkRunId.toString(),
-      name: 'Unity CI - Pull Request',
+      name: nameCheck,
       status: 'completed',
       conclusion: 'success',
       completed_at: new Date().toISOString(),
       output: {
-        title: 'Unity CI - Pull Request',
+        title: 'Build Success',
         summary: 'Build Passed'
       }
     })

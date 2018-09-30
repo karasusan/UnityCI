@@ -10,8 +10,9 @@ jest.mock('../src/build')
 const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
 const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
-const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
+const payloadBuildStatus = require('./fixtures/buildStatus.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
+
 //const payloadCheckRunRerequested = require('./fixtures/checkrunrerequested.event.json')
 
 describe('UnityCI', () => {
@@ -46,17 +47,17 @@ describe('UnityCI', () => {
       }
       Build.prototype.prepareBuildTarget = jest.fn().mockResolvedValue({
         status: 202,
-        text: payloadUpdateBuildTarget
+        body: payloadUpdateBuildTarget
       })
       Build.prototype.build = jest.fn().mockResolvedValue({
         status: 200,
-        text: payloadCreateNewBuild
+        body: payloadBuildStatus
       })
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payloadPullrequest)
-      expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.checks.create).toHaveBeenCalledTimes(config.matrix.length)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(2)
+      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length + 1)
       expect(github.checks.update.mock.calls[1][0]).toMatchObject({
         status: 'completed',
         conclusion: 'success'
@@ -112,14 +113,14 @@ describe('UnityCI', () => {
       })
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payloadPullrequest)
-      expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.checks.create).toHaveBeenCalledTimes(config.matrix.length)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(2)
+      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length + 1)
       expect(github.checks.update.mock.calls[1][0]).toMatchObject({
         status: 'completed',
         conclusion: 'failure'
       })
-      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
+      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(config.matrix.length)
     })
     it('CheckRun Rerequested Pass', async () => {
       /*

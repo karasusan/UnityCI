@@ -2,6 +2,7 @@ import UnityCloudBuildAPI from './unitycloudbuild'
 import { Response } from 'superagent'  // eslint-disable-line
 
 export default class Build {
+  private completedBuildStatues: string[] = ['success', 'failure', 'canceled', 'unknown'] // eslint-disable-line
   private api: UnityCloudBuildAPI // eslint-disable-line
   constructor (private config: any, private log: (msg: string) => void = (msg: string) => {}) {
     let logger = { log: this.log }
@@ -10,6 +11,10 @@ export default class Build {
 
   public static getBuildTargetId (branch: string, platform : string) : string {
     return `${branch}-${platform}`
+  }
+
+  static sleep (msec: number) : Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, msec))
   }
 
   async prepareBuildTarget (branch: string, platform : string) : Promise < Response > {
@@ -32,14 +37,29 @@ export default class Build {
   }
 
   async clearBuildTarget (branch: string, platform : string) : Promise < Response > {
-    const buildTargetId = Build.getBuildTargetId(branch, platform)
-    this.config.buildtargetid = buildTargetId
+    this.config.buildtargetid = Build.getBuildTargetId(branch, platform)
     return this.api.deleteBuildTarget(this.config)
   }
 
-  async build (branch: string, platform : string) : Promise < Response > {
-    const buildTargetId = Build.getBuildTargetId(branch, platform)
-    this.config.buildtargetid = buildTargetId
-    return this.api.startBuilds(this.config)
+  async build (branch: string, platform: string) : Promise < Response > {
+    this.config.buildtargetid = Build.getBuildTargetId(branch, platform)
+    const resultStartBuilds = await this.api.startBuilds(this.config)
+    if (resultStartBuilds.status !== 202) {
+      return resultStartBuilds
+    }
+    const buildNumber = resultStartBuilds.body.build
+    this.config.number = buildNumber.toString()
+
+    // Wait for build
+    while (true) {
+      const resultBuildStatus = await this.api.getBuild(this.config)
+      if (resultBuildStatus.status !== 200) {
+        return resultBuildStatus
+      }
+      if (this.completedBuildStatues.includes(resultBuildStatus.body.buildStatus)) {
+        return resultBuildStatus
+      }
+      await Build.sleep(10000)
+    }
   }
 }

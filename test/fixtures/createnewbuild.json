@@ -1,31 +1,29 @@
-[
-  {
-    "build": 3,
-    "buildtargetid": "android-builder",
-    "buildTargetName": "Android Builder",
-    "buildStatus": "queued",
-    "platform": "a ndroid",
-    "created": "2015-11-19T22:02:20.244Z",
-    "changeset": [],
-    "favorited": false,
-    "auditChanges": 1,
-    "links": {
-      "self": {
-        "method": "get",
-        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3"
-      },
-      "log": {
-        "method": "get",
-        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3/log"
-      },
-      "auditlog": {
-        "method": "get",
-        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3/auditlog"
-      },
-      "cancel": {
-        "method": "delete",
-        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3"
-      }
+{
+  "build": 3,
+  "buildtargetid": "android-builder",
+  "buildTargetName": "Android Builder",
+  "buildStatus": "queued",
+  "platform": "a ndroid",
+  "created": "2015-11-19T22:02:20.244Z",
+  "changeset": [],
+  "favorited": false,
+  "auditChanges": 1,
+  "links": {
+    "self": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3"
+    },
+    "log": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3/log"
+    },
+    "auditlog": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3/auditlog"
+    },
+    "cancel": {
+      "method": "delete",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-ios/builds/3"
     }
   }
-]
+}

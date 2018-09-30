@@ -76,7 +76,7 @@ export = (app: Application) => {
         return
       }
 
-      // TODO:: Build Project on UnityCloudBuild
+      // Start build
       const result3 = await _build.build(branch, param.platform)
       if (result3.status !== 202) {
         await context.github.checks.update({

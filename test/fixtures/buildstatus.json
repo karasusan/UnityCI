@@ -1,0 +1,65 @@
+{
+  "build": 3,
+  "buildtargetid": "android-builder",
+  "buildTargetName": "Android Builder",
+  "buildStatus": "success",
+  "platform": "android",
+  "workspaceSize": 8911006,
+  "created": "2015-07-14T21:56:28.202Z",
+  "finished": "2015-07-14T22:04:10.000Z",
+  "checkoutStartTime": "2015-07-14T22:00:20.000Z",
+  "checkoutTimeInSeconds": 40,
+  "buildStartTime": "2015-07-14T22:01:00.000Z",
+  "buildTimeInSeconds": 152.386056,
+  "publishStartTime": "2015-07-14T22:03:33.000Z",
+  "publishTimeInSeconds": 10.371839,
+  "totalTimeInSeconds": 461.798,
+  "lastBuiltRevision": "88e565df27ca35c2603c29eb924dc018f32a22c1",
+  "changeset": [],
+  "favorited": true,
+  "auditChanges": 0,
+  "projectVersion": {
+    "name": "android-builder-2",
+    "filename": "example-org/new-project/android-builder-2/android-builder.apk",
+    "projectName": "Example Unity Project",
+    "platform": "android",
+    "size": 14452762,
+    "created": "2015-07-14T22:03:45.847Z",
+    "lastMod": "2015-07-14T22:03:46.251Z",
+    "bundleId": "com.tsugi.example",
+    "udids": []
+  },
+  "links": {
+    "self": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/android-builder/builds/2"
+    },
+    "log": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/android-builder/builds/2/log"
+    },
+    "auditlog": {
+      "method": "get",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/android-builder/builds/2/auditlog"
+    },
+    "download_primary": {
+      "method": "get",
+      "href": "https://unitycloud-build-user-svc-dev-build.s3.amazonaws.com/example-org/new-project/android-builder-2/android-builder.apk?AWSAccessKeyId=AKIAI6ZGSQWNDMF7X33A&Expires=1447973385&Signature=ffKQIKOJsKN6qrwzxObXSSyCVts%3D&response-content-disposition=attachment%3B%20filename%3Dexample-org%2Fnew-project-android-2-1436910988202.apk&response-content-type=application%2Foctet-stream",
+      "meta": {
+        "type": "APK"
+      }
+    },
+    "create_share": {
+      "method": "post",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/android-builder/builds/2/share"
+    },
+    "revoke_share": {
+      "method": "delete",
+      "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/android-builder/builds/2/share"
+    },
+    "icon": {
+      "method": "get",
+      "href": "https://unitycloud-build-user-svc-dev-extras-pub.s3.amazonaws.com/example-org/new-project/android-builder-2/icon.png"
+    }
+  }
+}

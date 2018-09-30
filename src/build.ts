@@ -37,19 +37,9 @@ export default class Build {
     return this.api.deleteBuildTarget(this.config)
   }
 
-  async build () : Promise < Response > {
-    return this.api.startBuilds({
-      orgid: this.config.orgid,
-      projectid: this.config.projectid,
-      buildtargetid: this.config.buildtargetid,
-      options: {
-        clean: true,
-        delay: 0,
-        commit: '',
-        headless: false,
-        label: 'standaloneosxintel64',
-        platform: 'standaloneosxintel64'
-      }
-    })
+  async build (branch: string, platform : string) : Promise < Response > {
+    const buildTargetId = Build.getBuildTargetId(branch, platform)
+    this.config.buildtargetid = buildTargetId
+    return this.api.startBuilds(this.config)
   }
 }

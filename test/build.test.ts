@@ -7,7 +7,7 @@ var nock = require('nock')
 
 const payloadListAllBuildTargets = require('./fixtures/listallbuildtargets.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
-const payloadBuildStatus = require('./fixtures/buildStatus.json')
+const payloadBuildStatus = require('./fixtures/buildstatus.json')
 
 const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
 const config = yaml.load(textConfig)

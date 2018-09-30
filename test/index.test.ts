@@ -9,7 +9,7 @@ jest.mock('../src/build')
 const textConfig = fs.readFileSync('./test/example.config.yml', 'utf-8')
 const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
-const payloadBuildStatus = require('./fixtures/buildStatus.json')
+const payloadBuildStatus = require('./fixtures/buildstatus.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
 

@@ -85,8 +85,7 @@ export = (app: Application) => {
     // Parallel Execution
     let promises: Promise<void>[] = new Array(config.matrix.length)
     for (let i = 0; i < config.matrix.length; i++) {
-      const param = config.matrix[i]
-      promises[i] = build(context, config, param, checkRunIdList[i])
+      promises[i] = build(context, config, config.matrix[i], checkRunIdList[i])
     }
     await Promise.all(promises)
   }
@@ -94,11 +93,12 @@ export = (app: Application) => {
   async function build (context: Context, config: any, param: any, checkRunId: number) {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
-    const nameCheckRun = param.name
-    let _build = new Build(config, app.log)
+    const nameCheckRun = `Unity CI - ${param.name}`
+    const platform = param.platform
+      let _build = new Build(config, app.log)
     let branch = pullRequest.head.ref
     // TODO:: Update BuiltTarget on UnityCloudBuild
-    const resultPrepareBuild = await _build.prepareBuildTarget(branch, param.platform)
+    const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
 
     // Build failed
     if (![200, 201, 202].includes(resultPrepareBuild.status)) {
@@ -118,8 +118,21 @@ export = (app: Application) => {
       return
     }
 
+    // In progress
+    await context.github.checks.update({
+      owner: repository.owner.login,
+      repo: repository.name,
+      check_run_id: checkRunId.toString(),
+      name: nameCheckRun,
+      status: 'in_progress',
+      output: {
+        title: 'In Progress',
+        summary: 'This build is in progress'
+      }
+    })
+
     // Start build
-    const resultBuild = await _build.build(branch, param.platform)
+    const resultBuild = await _build.build(branch, platform)
     if (resultBuild.status !== 200) {
       await context.github.checks.update({
         owner: repository.owner.login,

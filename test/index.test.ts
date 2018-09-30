@@ -12,6 +12,7 @@ const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
+//const payloadCheckRunRerequested = require('./fixtures/checkrunrerequested.event.json')
 
 describe('UnityCI', () => {
   let robot: Application
@@ -48,7 +49,7 @@ describe('UnityCI', () => {
         text: payloadUpdateBuildTarget
       })
       Build.prototype.build = jest.fn().mockResolvedValue({
-        status: 202,
+        status: 200,
         text: payloadCreateNewBuild
       })
       robot.auth = () => Promise.resolve(github)
@@ -119,6 +120,42 @@ describe('UnityCI', () => {
         conclusion: 'failure'
       })
       expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
+    })
+    it('CheckRun Rerequested Pass', async () => {
+      /*
+      github = {
+        checks: {
+          create: jest.fn().mockResolvedValue({
+            data: {
+              id: 1
+            }
+          }),
+          update: jest.fn().mockResolvedValue(null)
+
+        },
+        repos: {
+          getContent: jest.fn().mockResolvedValue({
+            data: {
+              content: Buffer.from(textConfig).toString('base64')
+            }
+          })
+        }
+      }
+      Build.prototype.prepareBuildTarget = jest.fn().mockResolvedValue({
+        status: 400,
+        text: payloadUpdateBuildTarget
+      })
+      robot.auth = () => Promise.resolve(github)
+      await robot.receive(payloadCheckRunRerequested)
+      expect(github.checks.create).toHaveBeenCalledTimes(1)
+      expect(github.repos.getContent).toHaveBeenCalledTimes(1)
+      expect(github.checks.update).toHaveBeenCalledTimes(2)
+      expect(github.checks.update.mock.calls[1][0]).toMatchObject({
+        status: 'completed',
+        conclusion: 'failure'
+      })
+      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
+      */
     })
   })
 })

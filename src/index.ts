@@ -5,17 +5,18 @@ const nameCheck = 'Unity CI - Pull Request'
 
 export = (app: Application) => {
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
-  app.on('check_run.rerequested', checkPullRequest)
+  app.on('check_run.rerequested', recheckPullRequest)
 
   async function checkPullRequest (context: Context) {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
+    const headSha = pullRequest.head.sha
     // Load unityci.yaml from Repository
     const config = await context.config('unityci.yml')
     // unityci.yaml not found
     if (!config) {
       await context.github.checks.create({
-        head_sha: pullRequest.head.sha,
+        head_sha: headSha,
         owner: repository.owner.login,
         repo: repository.name,
         name: nameCheck,
@@ -34,7 +35,7 @@ export = (app: Application) => {
       owner: repository.owner.login,
       repo: repository.name,
       name: nameCheck,
-      head_sha: pullRequest.head.sha
+      head_sha: headSha
     })
     const checkRunId = result.data.id
 
@@ -113,5 +114,7 @@ export = (app: Application) => {
         summary: 'Build Passed'
       }
     })
+  }
+  async function recheckPullRequest (context: Context) {
   }
 }

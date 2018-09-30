@@ -76,7 +76,7 @@ export = (app: Application) => {
     }
 
     // TODO:: Build Project on UnityCloudBuild
-    const result3 = await _build.build()
+    const result3 = await _build.build(branch, 'standaloneosxuniversal')
     if (result3.status !== 202) {
       await context.github.checks.update({
         owner: repository.owner.login,

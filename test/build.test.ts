@@ -6,7 +6,7 @@ import yaml from 'js-yaml'
 var nock = require('nock')
 
 const listAllBuildTargets = require('./fixtures/listallbuildtargets.json')
-const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/unityci.yml'), 'utf-8')
+const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
 const config = yaml.load(textConfig)
 
 describe('UnityCI', () => {

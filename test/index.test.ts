@@ -41,7 +41,7 @@ describe('UnityCI', () => {
           })
         }
       }
-      Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
+      Build.prototype.prepareBuildTarget = jest.fn().mockResolvedValue({
         status: 202,
         text: payloadUpdateBuildTarget
       })
@@ -58,7 +58,7 @@ describe('UnityCI', () => {
         status: 'completed',
         conclusion: 'success'
       })
-      expect(Build.prototype.prepareBuild).toHaveBeenCalledTimes(1)
+      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
       expect(Build.prototype.build).toHaveBeenCalledTimes(1)
     })
     it('Config File Not Found', async () => {
@@ -103,7 +103,7 @@ describe('UnityCI', () => {
           })
         }
       }
-      Build.prototype.prepareBuild = jest.fn().mockResolvedValue({
+      Build.prototype.prepareBuildTarget = jest.fn().mockResolvedValue({
         status: 400,
         text: payloadUpdateBuildTarget
       })
@@ -116,7 +116,7 @@ describe('UnityCI', () => {
         status: 'completed',
         conclusion: 'failure'
       })
-      expect(Build.prototype.prepareBuild).toHaveBeenCalledTimes(1)
+      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
     })
   })
 })

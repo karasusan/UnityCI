@@ -5,23 +5,47 @@ import yaml from 'js-yaml'
 
 var nock = require('nock')
 
-const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+const listAllBuildTargets = require('./fixtures/listallbuildtargets.json')
+const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/unityci.yml'), 'utf-8')
 const config = yaml.load(textConfig)
 
 describe('UnityCI', () => {
   let build: Build
+  const branch = 'master'
+  const platform = 'standaloneosxuniversal'
+  const buildtargetId = Build.getBuildTargetId(branch, platform)
 
   beforeEach(() => {
     build = new Build(config, console.log)
   })
 
-  describe('pull request open trigger build project', () => {
-    it('Prepare Build Pass', async () => {
+  describe('Build', () => {
+    it('prepareBuild Pass', async () => {
       nock(config.url)
-        .put(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${config.buildtargetid}`, config.option)
-        .reply(200, {})
-      const result = await build.prepareBuild('master', 'standaloneosxintel64')
-      expect(result.status).toBe(200)
+        .post(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets`, config.option)
+        .reply(201, {})
+      nock(config.url)
+        .get(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets`)
+        .reply(200, listAllBuildTargets)
+      const result = await build.prepareBuildTarget(branch, platform)
+      expect(result.status).toBe(201)
+    })
+    it('clearBuild Pass', async () => {
+      nock(config.url)
+        .post(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets`, config.option)
+        .reply(201, {})
+      nock(config.url)
+        .get(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets`)
+        .reply(200, listAllBuildTargets)
+      nock(config.url)
+        .delete(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildtargetId}`, config.option)
+        .reply(204, {})
+
+      const result = await build.prepareBuildTarget(branch, platform)
+      expect(result.status).toBe(201)
+
+      const result2 = await build.clearBuildTarget(branch, platform)
+      expect(result2.status).toBe(204)
     })
   })
 })

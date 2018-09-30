@@ -55,7 +55,7 @@ export = (app: Application) => {
 
     let _build = new Build(config, app.log)
     // TODO:: Update BuiltTarget on UnityCloudBuild
-    const resultPrepareBuild = await _build.prepareBuild(branch, 'standaloneosxuniversal')
+    const resultPrepareBuild = await _build.prepareBuildTarget(branch, 'standaloneosxuniversal')
 
     // Build failed
     if (resultPrepareBuild.status !== 202) {

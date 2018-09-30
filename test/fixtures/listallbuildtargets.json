@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Default WebGL",
+    "platform": "webgl",
+    "buildtargetid": "default-webgl",
+    "enabled": true,
+    "links": {
+      "self": {
+        "method": "get",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-webgl"
+      },
+      "start_builds": {
+        "method": "post",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-webgl/builds"
+      },
+      "list_builds": {
+        "method": "get",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-webgl/builds"
+      },
+      "cancel_builds": {
+        "method": "delete",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-webgl/builds"
+      },
+      "polling": {
+        "method": "post",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-webgl/polling"
+      }
+    }
+  },
+  {
+    "name": "Default Linux desktop Universal",
+    "platform": "standalonelinuxuniversal",
+    "buildtargetid": "default-linux-desktop-universal",
+    "enabled": true,
+    "links": {
+      "self": {
+        "method": "get",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-linux-desktop-universal"
+      },
+      "start_builds": {
+        "method": "post",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-linux-desktop-universal/builds"
+      },
+      "list_builds": {
+        "method": "get",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-linux-desktop-universal/builds"
+      },
+      "cancel_builds": {
+        "method": "delete",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-linux-desktop-universal/builds"
+      },
+      "polling": {
+        "method": "post",
+        "href": "/api/v1/orgs/example-org/projects/new-project/buildtargets/default-linux-desktop-universal/polling"
+      }
+    }
+  }
+]

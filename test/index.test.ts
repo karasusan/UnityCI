@@ -12,6 +12,7 @@ const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
 const payloadBuildStatus = require('./fixtures/buildStatus.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
+const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
 
 //const payloadCheckRunRerequested = require('./fixtures/checkrunrerequested.event.json')
 
@@ -50,15 +51,20 @@ describe('UnityCI', () => {
         body: payloadUpdateBuildTarget
       })
       Build.prototype.build = jest.fn().mockResolvedValue({
+        status: 202,
+        body: payloadCreateNewBuild
+      })
+      Build.prototype.waitForBuild = jest.fn().mockResolvedValue({
         status: 200,
         body: payloadBuildStatus
       })
+
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(config.matrix.length)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length + 1)
-      expect(github.checks.update.mock.calls[1][0]).toMatchObject({
+      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length * 2 + 1)
+      expect(github.checks.update.mock.calls[4][0]).toMatchObject({
         status: 'completed',
         conclusion: 'success'
       })

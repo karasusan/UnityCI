@@ -53,11 +53,9 @@ export default class Build {
     }
 
     // Start build
-    const resultStartBuilds = await this.api.startBuilds(this.config)
-    if (resultStartBuilds.status !== 202) {
-      return resultStartBuilds
-    }
-    const buildNumber = resultStartBuilds.body[0].build
+    return this.api.startBuilds(this.config)
+  }
+  async waitForBuild (branch: string, platform: string, buildNumber: number) : Promise < Response > {
     this.config.number = buildNumber.toString()
 
     // Wait for build

@@ -1,5 +1,6 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
+import Checks from './checks'
 
 export = (app: Application) => {
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
@@ -95,7 +96,8 @@ export = (app: Application) => {
     const repository = context.payload.repository
     const nameCheckRun = `Unity CI - ${param.name}`
     const platform = param.platform
-      let _build = new Build(config, app.log)
+
+    let _build = new Build(config, app.log)
     let branch = pullRequest.head.ref
     // TODO:: Update BuiltTarget on UnityCloudBuild
     const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
@@ -118,22 +120,9 @@ export = (app: Application) => {
       return
     }
 
-    // In progress
-    await context.github.checks.update({
-      owner: repository.owner.login,
-      repo: repository.name,
-      check_run_id: checkRunId.toString(),
-      name: nameCheckRun,
-      status: 'in_progress',
-      output: {
-        title: 'In Progress',
-        summary: 'This build is in progress'
-      }
-    })
-
     // Start build
     const resultBuild = await _build.build(branch, platform)
-    if (resultBuild.status !== 200) {
+    if (resultBuild.status !== 202) {
       await context.github.checks.update({
         owner: repository.owner.login,
         repo: repository.name,
@@ -150,7 +139,42 @@ export = (app: Application) => {
       return
     }
 
-    const conclusion = convertConclusion(resultBuild.body.buildStatus)
+    const orgId = resultBuild.body[0].orgid
+    const projectId = resultBuild.body[0].projectid
+    const buildTargetId = resultBuild.body[0].buildtargetid
+    const buildNumber = resultBuild.body[0].build
+
+    // In progress
+    await context.github.checks.update({
+      owner: repository.owner.login,
+      repo: repository.name,
+      check_run_id: checkRunId.toString(),
+      name: nameCheckRun,
+      status: 'in_progress',
+      output: {
+        title: 'In Progress',
+        summary: Checks.getSummary(orgId, projectId, buildTargetId, buildNumber)
+      }
+    })
+
+    const resultWaitForBuild = await _build.waitForBuild(branch, platform, buildNumber)
+    if (resultWaitForBuild.status !== 200) {
+      await context.github.checks.update({
+        owner: repository.owner.login,
+        repo: repository.name,
+        check_run_id: checkRunId.toString(),
+        name: nameCheckRun,
+        status: 'completed',
+        conclusion: 'failure',
+        completed_at: new Date().toISOString(),
+        output: {
+          title: 'Build Failed',
+          summary: resultBuild.status.toString() + ' ' + resultBuild.text
+        }
+      })
+      return
+    }
+    const conclusion = convertConclusion(resultWaitForBuild.body.buildStatus)
 
     // Completed
     await context.github.checks.update({

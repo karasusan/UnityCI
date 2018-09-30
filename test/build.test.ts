@@ -52,11 +52,16 @@ describe('UnityCI', () => {
       nock(config.url)
         .delete(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildTargetId}/builds`)
         .reply(204, {})
+
+      const result = await build.build(branch, platform)
+      expect(result.status).toBe(202)
+    })
+    it('waitForBuild Pass', async () => {
       nock(config.url)
         .get(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildTargetId}/builds/${buildNumber}`)
         .reply(200, payloadBuildStatus)
 
-      const result = await build.build(branch, platform)
+      const result = await build.waitForBuild(branch, platform, buildNumber)
       expect(result.status).toBe(200)
     })
   })

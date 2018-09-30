@@ -1,13 +1,12 @@
 import { Application } from 'probot'
 import { default as Build } from '../src/build'
-import * as path from 'path'
 import * as fs from 'fs'
 import yaml from 'js-yaml'
 const app = require('../src/index')
 
 jest.mock('../src/build')
 
-const textConfig = fs.readFileSync(path.resolve(__dirname, '../test/example.config.yml'), 'utf-8')
+const textConfig = fs.readFileSync('./test/example.config.yml', 'utf-8')
 const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
 const payloadBuildStatus = require('./fixtures/buildStatus.json')

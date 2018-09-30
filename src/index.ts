@@ -86,7 +86,8 @@ export = (app: Application) => {
     // Parallel Execution
     let promises: Promise<void>[] = new Array(config.matrix.length)
     for (let i = 0; i < config.matrix.length; i++) {
-      promises[i] = build(context, config, config.matrix[i], checkRunIdList[i])
+      const clone = Object.assign({}, config)
+      promises[i] = build(context, clone, clone.matrix[i], checkRunIdList[i])
     }
     await Promise.all(promises)
   }
@@ -96,9 +97,10 @@ export = (app: Application) => {
     const repository = context.payload.repository
     const nameCheckRun = `Unity CI - ${param.name}`
     const platform = param.platform
+    const branch = pullRequest.head.ref
+    const buildTargetId = Build.getBuildTargetId(branch, platform)
 
     let _build = new Build(config, app.log)
-    let branch = pullRequest.head.ref
     // TODO:: Update BuiltTarget on UnityCloudBuild
     const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
 
@@ -108,6 +110,7 @@ export = (app: Application) => {
         owner: repository.owner.login,
         repo: repository.name,
         check_run_id: checkRunId.toString(),
+        external_id: buildTargetId,
         name: nameCheckRun,
         status: 'completed',
         conclusion: 'failure',
@@ -127,6 +130,7 @@ export = (app: Application) => {
         owner: repository.owner.login,
         repo: repository.name,
         check_run_id: checkRunId.toString(),
+        external_id: buildTargetId,
         name: nameCheckRun,
         status: 'completed',
         conclusion: 'failure',
@@ -139,9 +143,8 @@ export = (app: Application) => {
       return
     }
 
-    const orgId = resultBuild.body[0].orgid
-    const projectId = resultBuild.body[0].projectid
-    const buildTargetId = resultBuild.body[0].buildtargetid
+    const orgId = config.orgid
+    const projectId = config.projectid
     const buildNumber = resultBuild.body[0].build
 
     // In progress
@@ -149,6 +152,7 @@ export = (app: Application) => {
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: checkRunId.toString(),
+      external_id: buildTargetId,
       name: nameCheckRun,
       status: 'in_progress',
       output: {
@@ -163,6 +167,7 @@ export = (app: Application) => {
         owner: repository.owner.login,
         repo: repository.name,
         check_run_id: checkRunId.toString(),
+        external_id: buildTargetId,
         name: nameCheckRun,
         status: 'completed',
         conclusion: 'failure',
@@ -181,6 +186,7 @@ export = (app: Application) => {
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: checkRunId.toString(),
+      external_id: buildTargetId,
       name: nameCheckRun,
       status: 'completed',
       conclusion: conclusion,

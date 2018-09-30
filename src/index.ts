@@ -69,7 +69,7 @@ export = (app: Application) => {
       }
     })
 
-    // create check run
+    // Create Check run
     let checkRunIdList: number[] = new Array(config.matrix.length)
     checkRunIdList[0] = checkRunId
     for (let i = 1; i < checkRunIdList.length; i++) {
@@ -82,10 +82,13 @@ export = (app: Application) => {
       checkRunIdList[i] = resultCreateCheckRun.data.id
     }
 
+    // Parallel Execution
+    let promises: Promise<void>[] = new Array(config.matrix.length)
     for (let i = 0; i < config.matrix.length; i++) {
       const param = config.matrix[i]
-      await build(context, config, param, checkRunIdList[i])
+      promises[i] = build(context, config, param, checkRunIdList[i])
     }
+    await Promise.all(promises)
   }
 
   async function build (context: Context, config: any, param: any, checkRunId: number) {

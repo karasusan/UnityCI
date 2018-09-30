@@ -1,10 +1,11 @@
 import UnityCloudBuildAPI from './unitycloudbuild'
-import request from 'superagent' // eslint-disable-line
+import request from 'superagent'
 
 export default class Build {
   private api: UnityCloudBuildAPI // eslint-disable-line
-  constructor (private config: any) {
-    this.api = new UnityCloudBuildAPI(this.config.url, undefined, this.config.apikey)
+  constructor (private config: any, private log: (msg: string) => void = (msg: string) => {}) {
+    let logger = { log: this.log }
+    this.api = new UnityCloudBuildAPI(this.config.url, logger, this.config.apikey)
   }
 
   async prepareBuild (branch : string, platform : string) : Promise < request.Response > {

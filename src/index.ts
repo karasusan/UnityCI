@@ -53,12 +53,12 @@ export = (app: Application) => {
       }
     })
 
-    let _build = new Build(config)
+    let _build = new Build(config, app.log)
     // TODO:: Update BuiltTarget on UnityCloudBuild
-    const result2 = await _build.prepareBuild(branch, 'standaloneosxuniversal')
+    const resultPrepareBuild = await _build.prepareBuild(branch, 'standaloneosxuniversal')
 
     // Build failed
-    if (result2.status !== 202) {
+    if (resultPrepareBuild.status !== 202) {
       await context.github.checks.update({
         owner: repository.owner.login,
         repo: repository.name,
@@ -69,7 +69,7 @@ export = (app: Application) => {
         completed_at: new Date().toISOString(),
         output: {
           title: 'Build Failed',
-          summary: result2.status.toString() + ' ' + result2.body
+          summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.body
         }
       })
       return

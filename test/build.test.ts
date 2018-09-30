@@ -12,7 +12,7 @@ describe('UnityCI', () => {
   let build: Build
 
   beforeEach(() => {
-    build = new Build(config)
+    build = new Build(config, console.log)
   })
 
   describe('pull request open trigger build project', () => {

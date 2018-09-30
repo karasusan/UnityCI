@@ -14,6 +14,14 @@ describe('UnityCloudBuild', () => {
   beforeEach(() => {
   })
 
+  it('addBuildTarget', async () => {
+    nock(config.url)
+      .post(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets`, config.option)
+      .reply(200, {})
+
+    const result = await api.addBuildTarget(config)
+    expect(result.status).toBe(200)
+  })
   it('updateBuildTarget', async () => {
     nock(config.url)
       .put(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${config.buildtargetid}`, config.option)

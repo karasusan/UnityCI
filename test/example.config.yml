@@ -32,7 +32,7 @@ options:
 
 # Check different combinations of build flags
 matrix:
-- name: MacOS
-  platform: standaloneosxuniversal
-- name: Windows
-  platform: standalonewindows64
+  - name: MacOS
+    platform: standaloneosxuniversal
+  - name: Windows
+    platform: standalonewindows64

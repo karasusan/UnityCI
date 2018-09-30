@@ -17,7 +17,7 @@ describe('UnityCI', () => {
   const branch = 'master'
   const platform = 'standaloneosxuniversal'
   const buildTargetId = Build.getBuildTargetId(branch, platform)
-  const buildNumber = payloadCreateNewBuild.build
+  const buildNumber = payloadCreateNewBuild[0].build
 
   beforeEach(() => {
     build = new Build(config, console.log)
@@ -49,6 +49,9 @@ describe('UnityCI', () => {
       nock(config.url)
         .post(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildTargetId}/builds`)
         .reply(202, payloadCreateNewBuild)
+      nock(config.url)
+        .delete(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildTargetId}/builds`)
+        .reply(204, {})
       nock(config.url)
         .get(`/orgs/${config.orgid}/projects/${config.projectid}/buildtargets/${buildTargetId}/builds/${buildNumber}`)
         .reply(200, payloadBuildStatus)

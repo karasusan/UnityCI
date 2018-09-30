@@ -63,7 +63,7 @@ export = (app: Application) => {
       const resultPrepareBuild = await _build.prepareBuildTarget(branch, param.platform)
 
       // Build failed
-      if (![201, 202].includes(resultPrepareBuild.status)) {
+      if (![200, 201, 202].includes(resultPrepareBuild.status)) {
         await context.github.checks.update({
           owner: repository.owner.login,
           repo: repository.name,
@@ -93,7 +93,7 @@ export = (app: Application) => {
           completed_at: new Date().toISOString(),
           output: {
             title: 'Build Failed',
-            summary: result3.status.toString() + ' ' + result3.body
+            summary: result3.status.toString() + ' ' + result3.text
           }
         })
         return

@@ -147,6 +147,9 @@ export default class UnityCloudBuildAPI {
     }
 
     req.end((error, response) => {
+      if (this.logger) {
+        this.logger.log(`Received ${method} ${url} ${response.status}\n${response.text}`)
+      }
       if (error || !response.ok) {
         reject(error)
         this.errorHandlers.forEach(handler => handler(error))

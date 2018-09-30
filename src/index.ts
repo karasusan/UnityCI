@@ -1,10 +1,13 @@
-import { Application } from 'probot' // eslint-disable-line
+import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 
 const nameCheck = 'Unity CI - Pull Request'
 
 export = (app: Application) => {
-  app.on(['pull_request.opened', 'pull_request.reopened'], async context => {
+  app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
+  app.on('check_run.rerequested', checkPullRequest)
+
+  async function checkPullRequest (context: Context) {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
     // Load unityci.yaml from Repository
@@ -59,7 +62,7 @@ export = (app: Application) => {
       const resultPrepareBuild = await _build.prepareBuildTarget(branch, param.platform)
 
       // Build failed
-      if (resultPrepareBuild.status !== 202) {
+      if (![201, 202].includes(resultPrepareBuild.status)) {
         await context.github.checks.update({
           owner: repository.owner.login,
           repo: repository.name,
@@ -70,7 +73,7 @@ export = (app: Application) => {
           completed_at: new Date().toISOString(),
           output: {
             title: 'Build Failed',
-            summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.body
+            summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.text
           }
         })
         return
@@ -78,7 +81,7 @@ export = (app: Application) => {
 
       // Start build
       const result3 = await _build.build(branch, param.platform)
-      if (result3.status !== 202) {
+      if (result3.status !== 200) {
         await context.github.checks.update({
           owner: repository.owner.login,
           repo: repository.name,
@@ -96,8 +99,7 @@ export = (app: Application) => {
       }
     }
 
-    // TODO:: Wait response from Unity Cloud Build
-    // TODO:: Call Check API
+    // Completed
     await context.github.checks.update({
       owner: repository.owner.login,
       repo: repository.name,
@@ -111,5 +113,5 @@ export = (app: Application) => {
         summary: 'Build Passed'
       }
     })
-  })
+  }
 }

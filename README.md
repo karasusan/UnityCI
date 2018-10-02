@@ -5,9 +5,9 @@
 This product made with [Probot](https://probot.github.io).
 
 ## Build Status
-|Travis CI|
-|---------|
-|[![Build Status](https://travis-ci.org/karasusan/UnityCI.svg?branch=master)](https://travis-ci.org/karasusan/UnityCI)|
+|Travis CI|Codecov|
+|---------|---------|
+|[![Build Status](https://travis-ci.org/karasusan/UnityCI.svg?branch=master)](https://travis-ci.org/karasusan/UnityCI)|[![codecov](https://codecov.io/gh/karasusan/UnityCI/branch/master/graph/badge.svg)](https://codecov.io/gh/karasusan/UnityCI)|
 
 **UNDER CONSTRUCTION**
 

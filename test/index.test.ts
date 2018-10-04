@@ -12,6 +12,7 @@ const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
 const payloadBuildStatus = require('./fixtures/buildstatus.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
+const webhookBodyBuildResult = require('./fixtures/webhookbodybuildresult.json')
 
 //const payloadCheckRunRerequested = require('./fixtures/checkrunrerequested.event.json')
 
@@ -25,8 +26,8 @@ describe('UnityCI', () => {
     robot.load(app)
   })
 
-  describe('pull request open trigger build project', () => {
-    it('All Pass', async () => {
+  describe('pull_request.opened', () => {
+    it('Pass', async () => {
       github = {
         checks: {
           create: jest.fn().mockResolvedValue({
@@ -127,41 +128,59 @@ describe('UnityCI', () => {
       })
       expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(config.matrix.length)
     })
-    it('CheckRun Rerequested Pass', async () => {
-      /*
+  })
+  describe('unitycloudbuild.success', () => {
+    it('Pass', async () => {
       github = {
         checks: {
-          create: jest.fn().mockResolvedValue({
-            data: {
-              id: 1
-            }
-          }),
           update: jest.fn().mockResolvedValue(null)
-
-        },
-        repos: {
-          getContent: jest.fn().mockResolvedValue({
-            data: {
-              content: Buffer.from(textConfig).toString('base64')
-            }
-          })
         }
       }
-      Build.prototype.prepareBuildTarget = jest.fn().mockResolvedValue({
-        status: 400,
-        text: payloadUpdateBuildTarget
-      })
       robot.auth = () => Promise.resolve(github)
-      await robot.receive(payloadCheckRunRerequested)
-      expect(github.checks.create).toHaveBeenCalledTimes(1)
-      expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(2)
-      expect(github.checks.update.mock.calls[1][0]).toMatchObject({
-        status: 'completed',
-        conclusion: 'failure'
-      })
-      expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(1)
-      */
+      const payloadBuildResult: any = Object.assign(payloadPullrequest, {})
+      payloadBuildResult.name = 'unitycloudbuild'
+      payloadBuildResult.payload.buildResult = webhookBodyBuildResult
+      payloadBuildResult.payload.buildResult.buildStatus = 'success'
+      payloadBuildResult.payload.action = 'success'
+
+      await robot.receive(payloadBuildResult)
+      expect(github.checks.update).toHaveBeenCalledTimes(1)
+    })
+  })
+  describe('unitycloudbuild.failed', () => {
+    it('Pass', async () => {
+      github = {
+        checks: {
+          update: jest.fn().mockResolvedValue(null)
+        }
+      }
+      robot.auth = () => Promise.resolve(github)
+      const payloadBuildResult: any = Object.assign(payloadPullrequest, {})
+      payloadBuildResult.name = 'unitycloudbuild'
+      payloadBuildResult.payload.buildResult = webhookBodyBuildResult
+      payloadBuildResult.payload.buildResult.buildStatus = 'failure'
+      payloadBuildResult.payload.action = 'failure'
+
+      await robot.receive(payloadBuildResult)
+      expect(github.checks.update).toHaveBeenCalledTimes(1)
+    })
+  })
+  describe('unitycloudbuild.canceled', () => {
+    it('Pass', async () => {
+      github = {
+        checks: {
+          update: jest.fn().mockResolvedValue(null)
+        }
+      }
+      robot.auth = () => Promise.resolve(github)
+      const payloadBuildResult: any = Object.assign(payloadPullrequest, {})
+      payloadBuildResult.name = 'unitycloudbuild'
+      payloadBuildResult.payload.buildResult = webhookBodyBuildResult
+      payloadBuildResult.payload.buildResult.buildStatus = 'canceled'
+      payloadBuildResult.payload.action = 'canceled'
+
+      await robot.receive(payloadBuildResult)
+      expect(github.checks.update).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -2,13 +2,14 @@ import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
 
-const webhook = require('./webhook')
+//const webhook = require('./webhook')
 
 export = (app: Application) => {
-  webhook(app)
+  //webhook(app)
 
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
-  app.on('check_run.rerequested', recheckPullRequest)
+  app.on(['check_run.rerequested'], recheckPullRequest)
+  app.on(['unitycloudbuild.success', 'unitycloudbuild.failure', 'unitycloudbuild.canceled'], publishBuildStatus)
 
   function convertConclusion (buildStatus:string) {
     switch (buildStatus) {
@@ -203,5 +204,28 @@ export = (app: Application) => {
   }
 
   async function recheckPullRequest (context: Context) {
+  }
+
+  async function publishBuildStatus (context: Context) {
+    const repository = context.payload.repository
+    const buildResult = context.payload.buildResult
+    const conclusion = convertConclusion(buildResult.buildStatus)
+
+    //TODO::
+    const checkRunId = 0
+
+    // Completed
+    await context.github.checks.update({
+      owner: repository.owner.login,
+      repo: repository.name,
+      check_run_id: checkRunId.toString(),
+      status: 'completed',
+      conclusion: conclusion,
+      completed_at: new Date().toISOString(),
+      output: {
+        title: 'Build Success',
+        summary: 'Build Passed'
+      }
+    })
   }
 }

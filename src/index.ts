@@ -2,10 +2,10 @@ import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
 
-//const webhook = require('./webhook')
+const appFn = require('./webhook')
 
 export = (app: Application) => {
-  //webhook(app)
+  app.load(appFn)
 
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
   app.on(['check_run.rerequested'], recheckPullRequest)

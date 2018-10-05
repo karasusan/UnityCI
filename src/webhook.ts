@@ -1,79 +1,78 @@
-import {Application} from 'probot'  // eslint-disable-line
-import {GitHubAPI} from "probot/lib/github" // eslint-disable-line
+/* eslint-disable no-undef */
+import { AnyResponse } from '@octokit/rest' // eslint-disable-line
+import { Request, Response } from 'express' // eslint-disable-line
 
-const Bottleneck = require('bottleneck')
+// Built-in app to expose stats about the deployment
+module.exports = async (app: any): Promise<void> => {
+  // Cache of stats that get reported
+  const stats = { installations: 0, popular: [{}] }
 
-const limiter = new Bottleneck({ maxConcurrent: 1, minTime: 0 })
+  // Refresh the stats when the ApplicationFunction is loaded
+  const initializing = refresh()
 
-const defaults = {
-  delay: !process.env.DISABLE_DELAY, // Should the first run be put on a random delay?
-  interval: 60 * 60 * 1000 // 1 hour
-}
+  // Check for accounts (typically spammy or abusive) to ignore
+  const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
 
-module.exports = (robot: Application, options: any) => {
-  options = Object.assign({}, defaults, options || {})
-  const intervals : any[] = []
+  // Setup /probot/stats endpoint to return cached stats
+  app.router.get('/probot/hook', async (req: Request, res: Response) => {
+    // ensure stats are loaded
+    await initializing
+    res.json(stats)
+  })
 
-  setup()
+  async function refresh () {
+    const installations = await getInstallations()
 
-  function setup () {
-    return eachInstallation(setupInstallation)
+    stats.installations = installations.length
+    stats.popular = await popularInstallations(installations)
   }
 
-  function setupInstallation (installation:any) {
-    limiter.schedule(eachRepository, installation, (repository: any) => {
-      addHook(installation, repository)
-    })
+  async function getInstallations (): Promise<Installation[]> {
+    const github = await app.auth()
+    const req = github.apps.getInstallations({ per_page: 100 })
+    return github.paginate(req, (res: AnyResponse) => res.data)
   }
 
-  function addHook (installation: any, repository: any) {
-    if (intervals[repository.id]) {
-      return
-    }
+  async function popularInstallations (installations: Installation[]): Promise<Account[]> {
+    let popular = await Promise.all(installations.map(async (installation) => {
+      const { account } = installation
 
-    // Wait a random delay to more evenly distribute requests
-    const delay = options.delay ? options.interval * Math.random() : 0
-
-    robot.log.debug({repository, delay, interval: options.interval}, `Scheduling interval`)
-
-    intervals[repository.id] = setTimeout(() => {
-      const event = {
-        event: 'schedule',
-        payload: {action: 'repository', installation, repository}
+      if (ignoredAccounts.includes(account.login.toLowerCase())) {
+        account.stars = 0
+        app.log.debug({ installation }, 'Installation is ignored')
+        return account
       }
 
-      // Trigger events on this repository on an interval
-      intervals[repository.id] = setInterval(() => robot.receive(event), options.interval)
+      const github = await app.auth(installation.id)
 
-      // Trigger the first event now
-      robot.receive(event)
-    }, delay)
+      const req = github.apps.getInstallationRepositories({ per_page: 100 })
+      const repositories: Repository[] = await github.paginate(req, (res: AnyResponse) => {
+        return res.data.repositories.filter((repository: Repository) => !repository.private)
+      })
+
+      account.stars = repositories.reduce((stars, repository) => {
+        return stars + repository.stargazers_count
+      }, 0)
+
+      return account
+    }))
+
+    popular = popular.filter(installation => installation.stars > 0)
+    return popular.sort((a, b) => b.stars - a.stars).slice(0, 10)
   }
+}
 
-  async function eachInstallation (callback: (installation:any) => void) {
-    robot.log.trace('Fetching installations')
-    const github = await robot.auth()
-    const req = github.apps.getInstallations({per_page: 100})
-    await github.paginate(req, res => {
-      (options.filter ? res.data.filter((inst:any) => options.filter(inst)) : res.data).forEach(callback)
-    })
-  }
+interface Installation {
+  id: number
+  account: Account
+}
 
-  async function eachRepository (installation: any, callback: (msg: any, github: GitHubAPI) => void) {
-    robot.log.trace({installation}, 'Fetching repositories for installation')
-    const github = await robot.auth(installation.id)
-    const req = github.apps.getInstallationRepositories({per_page: 100})
-    return github.paginate(req, (res: any) => {
-      const repos = res.data.repositories;
-      (options.filter ? repos.filter((repo:any) => options.filter(installation, repo)) : repos)
-        .forEach(async (repository: any) => callback(repository, github))
-    })
-  }
+interface Account {
+  stars: number
+  login: string
+}
 
-  function stop (repository:any) {
-    robot.log.debug({repository}, `Canceling interval`)
-    clearInterval(intervals[repository.id])
-  }
-
-  return {stop}
+interface Repository {
+  private: boolean
+  stargazers_count: number // eslint-disable-line
 }

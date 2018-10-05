@@ -75,6 +75,26 @@ export = (app: Application) => {
       }
     })
 
+    let _build = new Build(config, app.log)
+    const resultRegisterHook = await _build.registerHook()
+    if (![200, 201].includes(resultRegisterHook.status)) {
+      await context.github.checks.update({
+        owner: repository.owner.login,
+        repo: repository.name,
+        check_run_id: checkRunId.toString(),
+        name: nameCheckRun,
+        status: 'completed',
+        conclusion: 'failure',
+        completed_at: new Date().toISOString(),
+        output: {
+          title: 'Build Failed',
+          summary: resultRegisterHook.status.toString() + ' ' + resultRegisterHook.text
+        }
+
+      })
+      return
+    }
+
     // Create Check run
     let checkRunIdList: number[] = new Array(config.matrix.length)
     checkRunIdList[0] = checkRunId
@@ -163,42 +183,6 @@ export = (app: Application) => {
       output: {
         title: 'In Progress',
         summary: Checks.getSummary(orgId, projectId, buildTargetId, buildNumber)
-      }
-    })
-
-    const resultWaitForBuild = await _build.waitForBuild(branch, platform, buildNumber)
-    if (resultWaitForBuild.status !== 200) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        external_id: buildTargetId,
-        name: nameCheckRun,
-        status: 'completed',
-        conclusion: 'failure',
-        completed_at: new Date().toISOString(),
-        output: {
-          title: 'Build Failed',
-          summary: resultBuild.status.toString() + ' ' + resultBuild.text
-        }
-      })
-      return
-    }
-    const conclusion = convertConclusion(resultWaitForBuild.body.buildStatus)
-
-    // Completed
-    await context.github.checks.update({
-      owner: repository.owner.login,
-      repo: repository.name,
-      check_run_id: checkRunId.toString(),
-      external_id: buildTargetId,
-      name: nameCheckRun,
-      status: 'completed',
-      conclusion: conclusion,
-      completed_at: new Date().toISOString(),
-      output: {
-        title: 'Build Success',
-        summary: 'Build Passed'
       }
     })
   }

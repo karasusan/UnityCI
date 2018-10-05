@@ -9,9 +9,9 @@ jest.mock('../src/build')
 const textConfig = fs.readFileSync('./test/example.config.yml', 'utf-8')
 const config = yaml.load(textConfig)
 const payloadUpdateBuildTarget = require('./fixtures/updatebuildtarget.json')
-const payloadBuildStatus = require('./fixtures/buildstatus.json')
 const payloadPullrequest = require('./fixtures/pullrequest.event.json')
 const payloadCreateNewBuild = require('./fixtures/createnewbuild.json')
+const payloadAddWebhook = require('./fixtures/addwebhook.json')
 const webhookBodyBuildResult = require('./fixtures/webhookbodybuildresult.json')
 
 //const payloadCheckRunRerequested = require('./fixtures/checkrunrerequested.event.json')
@@ -54,20 +54,16 @@ describe('UnityCI', () => {
         status: 202,
         body: payloadCreateNewBuild
       })
-      Build.prototype.waitForBuild = jest.fn().mockResolvedValue({
-        status: 200,
-        body: payloadBuildStatus
+      Build.prototype.registerHook = jest.fn().mockResolvedValue({
+        status: 201,
+        body: payloadAddWebhook
       })
 
       robot.auth = () => Promise.resolve(github)
       await robot.receive(payloadPullrequest)
       expect(github.checks.create).toHaveBeenCalledTimes(config.matrix.length)
       expect(github.repos.getContent).toHaveBeenCalledTimes(1)
-      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length * 2 + 1)
-      expect(github.checks.update.mock.calls[4][0]).toMatchObject({
-        status: 'completed',
-        conclusion: 'success'
-      })
+      expect(github.checks.update).toHaveBeenCalledTimes(config.matrix.length + 1)
       expect(Build.prototype.prepareBuildTarget).toHaveBeenCalledTimes(config.matrix.length)
       expect(Build.prototype.build).toHaveBeenCalledTimes(config.matrix.length)
     })

@@ -40,12 +40,12 @@ export default class Build {
   }
 
   async registerHook () : Promise <Response> {
-    const result = await this.api.getHookWithProjectId(this.config)
+    const result = await this.api.listHooksForProject(this.config)
     if (result.status !== 200) {
       return result
     }
-    const list = result.body
-    if (list.filter((obj:any) => obj.config.url === this.config.webhookUrl)) {
+    const list: any[] = result.body
+    if (list.filter(obj => obj.config.url === this.config.webhookUrl).length > 0) {
       return result
     }
     const option = {

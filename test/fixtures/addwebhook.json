@@ -1,0 +1,14 @@
+{
+  "hookType": "web",
+  "events": [
+    "ProjectBuildSuccess",
+    "ProjectBuildFailure"
+  ],
+  "config": {
+    "encoding": "json",
+    "sslVerify": true,
+    "url": "http://unity3d.com/example"
+  },
+  "active": true,
+  "id": 7
+}

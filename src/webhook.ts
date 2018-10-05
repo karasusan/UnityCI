@@ -14,7 +14,7 @@ module.exports = async (app: any): Promise<void> => {
   const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
 
   // Setup /probot/stats endpoint to return cached stats
-  app.router.get('/probot/hook', async (req: Request, res: Response) => {
+  app.router.get('/probot/webhook', async (req: Request, res: Response) => {
     // ensure stats are loaded
     await initializing
     res.json(stats)

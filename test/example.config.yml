@@ -9,6 +9,7 @@
 
 # URL for Unity Cloud Build
 url: https://build-api.cloud.unity3d.com/api/v1
+webhookUrl: https://smee.io/4EG70w4lbfpRtdGe/webhook
 
 # API key for Unity Cloud Build
 # You can find your API key in the Unity Cloud Services portal by clicking on 'Cloud Build Preferences' in the sidebar.

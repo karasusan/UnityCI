@@ -39,6 +39,41 @@ export default class Build {
     return this.api.updateBuildTarget(this.config)
   }
 
+  async registerHook () : Promise <Response> {
+    const result = await this.api.getHookWithProjectId(this.config)
+    if (result.status !== 200) {
+      return result
+    }
+    const list = result.body
+    if (list.filter((obj:any) => obj.config.url === this.config.webhookUrl)) {
+      return result
+    }
+    const option = {
+      hookType: 'web',
+      events: [
+        'ProjectBuildQueued',
+        'ProjectBuildStarted',
+        'ProjectBuildRestarted',
+        'ProjectBuildSuccess',
+        'ProjectBuildFailure',
+        'ProjectBuildCanceled',
+        'ProjectBuildUpload'
+      ],
+      config: {
+        encoding: 'json',
+        sslVerify: true,
+        url: this.config.webhookUrl
+      },
+      active: true
+    }
+
+    const clone = Object.assign({
+      option: option
+    }, this.config)
+
+    return this.api.addHookForProject(clone)
+  }
+
   async clearBuildTarget (branch: string, platform : string) : Promise < Response > {
     this.config.buildtargetid = Build.getBuildTargetId(branch, platform)
     return this.api.deleteBuildTarget(this.config)

@@ -1,31 +1,42 @@
 /* eslint-disable no-undef */
-import { AnyResponse } from '@octokit/rest' // eslint-disable-line
+//import { WebhookEvent, WebhookPayloadWithRepository } from '@octokit/webhooks' // eslint-disable-line
 import { Request, Response } from 'express' // eslint-disable-line
-import { Application } from 'probot' // eslint-disable-line
-import {createWebhookProxy} from 'probot/lib/webhook-proxy' // eslint-disable-line
+import {Application, Context} from 'probot' // eslint-disable-line
+import {createWebhookProxy} from 'probot/lib/webhook-proxy'
+import md5 from "md5"; // eslint-disable-line
+
+const contexts: { [key: string]: Context } = {} // eslint-disable-line
+
+export function addContext (orgId: string, projectId: string, buildTargetId: string, context:Context) {
+  const hash = getHash(orgId, projectId, buildTargetId)
+  contexts[hash] = context
+}
+
+export function deleteContext (hash: string) {
+  delete contexts[hash]
+}
+
+function getHash (orgId: string, projectId: string, buildTargetId: string) : string {
+  return md5(`${orgId}/${projectId}/${buildTargetId}`)
+}
 
 // Built-in app to expose stats about the deployment
 module.exports = (app: Application) => {
   // Cache of stats that get reported
-  const stats = { installations: 0, popular: [{}] }
-
-  // Refresh the stats when the ApplicationFunction is loaded
-  const initializing = refresh()
-  console.log(initializing)
 
   // Check for accounts (typically spammy or abusive) to ignore
-  const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
+  // const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
 
   // Setup /webhook endpoint to return cached stats
   app.router.post('/webhook', async (req: Request, res: Response) => {
-    // ensure stats are loaded
-    // await initializing
-    const event = {
+    app.log(req.body)
+    //const repository = context.payload.repository
+    const event: any = {
       event: 'unitycloudbuild',
-      //payload: {action: 'completed', installation, repository}
-      payload: {action: 'completed'}
+      payload: {
+        action: 'completed'
+      }
     }
-    // Trigger the first event now
     return app.receive(event)
   })
 
@@ -38,60 +49,4 @@ module.exports = (app: Application) => {
       url: webhookUrl
     })
   }
-
-  async function refresh () {
-    const installations = await getInstallations()
-
-    stats.installations = installations.length
-    stats.popular = await popularInstallations(installations)
-  }
-
-  async function getInstallations (): Promise<Installation[]> {
-    const github = await app.auth()
-    const req = github.apps.getInstallations({ per_page: 100 })
-    return github.paginate(req, (res: AnyResponse) => res.data)
-  }
-
-  async function popularInstallations (installations: Installation[]): Promise<Account[]> {
-    let popular = await Promise.all(installations.map(async (installation) => {
-      const { account } = installation
-
-      if (ignoredAccounts.includes(account.login.toLowerCase())) {
-        account.stars = 0
-        app.log.debug({ installation }, 'Installation is ignored')
-        return account
-      }
-
-      const github = await app.auth(installation.id)
-
-      const req = github.apps.getInstallationRepositories({ per_page: 100 })
-      const repositories: Repository[] = await github.paginate(req, (res: AnyResponse) => {
-        return res.data.repositories.filter((repository: Repository) => !repository.private)
-      })
-
-      account.stars = repositories.reduce((stars, repository) => {
-        return stars + repository.stargazers_count
-      }, 0)
-
-      return account
-    }))
-
-    popular = popular.filter(installation => installation.stars > 0)
-    return popular.sort((a, b) => b.stars - a.stars).slice(0, 10)
-  }
-}
-
-interface Installation {
-  id: number
-  account: Account
-}
-
-interface Account {
-  stars: number
-  login: string
-}
-
-interface Repository {
-  private: boolean
-  stargazers_count: number // eslint-disable-line
 }

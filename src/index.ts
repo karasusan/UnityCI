@@ -1,6 +1,7 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
+import { addContext } from './webhook' // eslint-disable-line
 
 const appFn = require('./webhook')
 
@@ -123,6 +124,8 @@ export = (app: Application) => {
     const nameCheckRun = `Unity CI - ${param.name}`
     const platform = param.platform
     const branch = pullRequest.head.ref
+    const orgId = config.orgid
+    const projectId = config.projectid
     const buildTargetId = Build.getBuildTargetId(branch, platform)
 
     let _build = new Build(config, app.log)
@@ -148,6 +151,9 @@ export = (app: Application) => {
       return
     }
 
+    // cotext
+    addContext(orgId, projectId, buildTargetId, context)
+
     // Start build
     const resultBuild = await _build.build(branch, platform)
     if (resultBuild.status !== 202) {
@@ -168,8 +174,6 @@ export = (app: Application) => {
       return
     }
 
-    const orgId = config.orgid
-    const projectId = config.projectid
     const buildNumber = resultBuild.body[0].build
 
     // In progress

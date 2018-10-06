@@ -122,6 +122,9 @@ export default class UnityCloudBuildAPI {
   private request(method: string, url: string, body: any, headers: any, queryParameters: any, form: any, reject: CallbackHandler, resolve: CallbackHandler) {
     if (this.logger) {
       this.logger.log(`Call ${method} ${url}`)
+      if(body) {
+        this.logger.log(`${JSON.stringify(body)}`)
+      }
     }
 
     let req = (request as SuperAgentStatic)(method, url).query(queryParameters)

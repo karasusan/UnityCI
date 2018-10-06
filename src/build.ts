@@ -4,7 +4,9 @@ import { Response } from 'superagent'  // eslint-disable-line
 export default class Build {
   private completedBuildStatues: string[] = ['success', 'failure', 'canceled', 'unknown'] // eslint-disable-line
   private api: UnityCloudBuildAPI // eslint-disable-line
-  private PollingInterval: number = 60000  // eslint-disable-line
+  private PollingInterval: number = 60000 // eslint-disable-line
+  private webhookUrl = process.env.WEBHOOK_PROXY_URL // eslint-disable-line
+  private webhookSecret = process.env.WEBHOOK_SECRET  // eslint-disable-line
   constructor (private config: any, private log: (msg: string) => void = (msg: string) => {}) {
     let logger = { log: this.log }
     this.api = new UnityCloudBuildAPI(this.config.url, logger, this.config.apikey)
@@ -45,10 +47,10 @@ export default class Build {
       return result
     }
     const list: any[] = result.body
-    if (list.filter(obj => obj.config.url === this.config.webhookUrl).length > 0) {
+    if (list.filter(obj => obj.config.url === this.webhookUrl).length > 0) {
       return result
     }
-    const option = {
+    const options = {
       hookType: 'web',
       events: [
         'ProjectBuildQueued',
@@ -60,17 +62,18 @@ export default class Build {
         'ProjectBuildUpload'
       ],
       config: {
+        url: this.webhookUrl,
         encoding: 'json',
         sslVerify: true,
-        url: this.config.webhookUrl
+        secret: this.webhookSecret,
+        includeShare: true
       },
       active: true
     }
 
-    const clone = Object.assign({
-      option: option
-    }, this.config)
-
+    const clone = Object.assign({}, this.config)
+    clone.options = options
+    this.log(clone.options.config.url)
     return this.api.addHookForProject(clone)
   }
 

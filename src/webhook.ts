@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 import { AnyResponse } from '@octokit/rest' // eslint-disable-line
 import { Request, Response } from 'express' // eslint-disable-line
+import { Application } from 'probot' // eslint-disable-line
 
 // Built-in app to expose stats about the deployment
-module.exports = async (app: any): Promise<void> => {
+module.exports = async (app: Application): Promise<void> => {
   // Cache of stats that get reported
   const stats = { installations: 0, popular: [{}] }
 
@@ -17,6 +18,7 @@ module.exports = async (app: any): Promise<void> => {
   app.router.get('/probot/webhook', async (req: Request, res: Response) => {
     // ensure stats are loaded
     await initializing
+    app.log(`/probot/webhook ${JSON.stringify(req.body)}`)
     res.json(stats)
   })
 

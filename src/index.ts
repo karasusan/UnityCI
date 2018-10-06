@@ -9,7 +9,7 @@ export = (app: Application) => {
 
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
   app.on(['check_run.rerequested'], recheckPullRequest)
-  app.on(['unitycloudbuild.success', 'unitycloudbuild.failure', 'unitycloudbuild.canceled'], publishBuildStatus)
+  app.on(['unitycloudbuild.completed'], publishBuildStatus)
 
   function convertConclusion (buildStatus:string) {
     switch (buildStatus) {

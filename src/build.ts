@@ -5,11 +5,14 @@ export default class Build {
   private completedBuildStatues: string[] = ['success', 'failure', 'canceled', 'unknown'] // eslint-disable-line
   private api: UnityCloudBuildAPI // eslint-disable-line
   private PollingInterval: number = 60000 // eslint-disable-line
-  private webhookUrl = process.env.WEBHOOK_PROXY_URL // eslint-disable-line
-  private webhookSecret = process.env.WEBHOOK_SECRET  // eslint-disable-line
+  private webhookUrl?: string = '' // eslint-disable-line
+  private webhookSecret? = process.env.UNITYCLOUDBUILD_WEBHOOK_SECRET  // eslint-disable-line
   constructor (private config: any, private log: (msg: string) => void = (msg: string) => {}) {
     let logger = { log: this.log }
     this.api = new UnityCloudBuildAPI(this.config.url, logger, this.config.apikey)
+    if (process.env.NODE_ENV !== 'production') {
+      this.webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
+    }
   }
 
   public static getBuildTargetId (branch: string, platform : string) : string {

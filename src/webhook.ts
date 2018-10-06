@@ -2,25 +2,42 @@
 import { AnyResponse } from '@octokit/rest' // eslint-disable-line
 import { Request, Response } from 'express' // eslint-disable-line
 import { Application } from 'probot' // eslint-disable-line
+import {createWebhookProxy} from 'probot/lib/webhook-proxy' // eslint-disable-line
 
 // Built-in app to expose stats about the deployment
-module.exports = async (app: Application): Promise<void> => {
+module.exports = (app: Application) => {
   // Cache of stats that get reported
   const stats = { installations: 0, popular: [{}] }
 
   // Refresh the stats when the ApplicationFunction is loaded
   const initializing = refresh()
+  console.log(initializing)
 
   // Check for accounts (typically spammy or abusive) to ignore
   const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
 
-  // Setup /probot/stats endpoint to return cached stats
-  app.router.get('/probot/webhook', async (req: Request, res: Response) => {
+  // Setup /webhook endpoint to return cached stats
+  app.router.post('/webhook', async (req: Request, res: Response) => {
     // ensure stats are loaded
-    await initializing
-    app.log(`/probot/webhook ${JSON.stringify(req.body)}`)
-    res.json(stats)
+    // await initializing
+    const event = {
+      event: 'unitycloudbuild',
+      //payload: {action: 'completed', installation, repository}
+      payload: {action: 'completed'}
+    }
+    // Trigger the first event now
+    return app.receive(event)
   })
+
+  const webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
+  if (process.env.NODE_ENV !== 'production' && webhookUrl) {
+    createWebhookProxy({
+      logger: app.log,
+      path: '/webhook',
+      port: 3000,
+      url: webhookUrl
+    })
+  }
 
   async function refresh () {
     const installations = await getInstallations()

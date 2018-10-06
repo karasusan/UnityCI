@@ -137,7 +137,7 @@ describe('UnityCI', () => {
       payloadBuildResult.name = 'unitycloudbuild'
       payloadBuildResult.payload.buildResult = webhookBodyBuildResult
       payloadBuildResult.payload.buildResult.buildStatus = 'success'
-      payloadBuildResult.payload.action = 'success'
+      payloadBuildResult.payload.action = 'completed'
 
       await robot.receive(payloadBuildResult)
       expect(github.checks.update).toHaveBeenCalledTimes(1)
@@ -155,7 +155,7 @@ describe('UnityCI', () => {
       payloadBuildResult.name = 'unitycloudbuild'
       payloadBuildResult.payload.buildResult = webhookBodyBuildResult
       payloadBuildResult.payload.buildResult.buildStatus = 'failure'
-      payloadBuildResult.payload.action = 'failure'
+      payloadBuildResult.payload.action = 'completed'
 
       await robot.receive(payloadBuildResult)
       expect(github.checks.update).toHaveBeenCalledTimes(1)
@@ -173,7 +173,7 @@ describe('UnityCI', () => {
       payloadBuildResult.name = 'unitycloudbuild'
       payloadBuildResult.payload.buildResult = webhookBodyBuildResult
       payloadBuildResult.payload.buildResult.buildStatus = 'canceled'
-      payloadBuildResult.payload.action = 'canceled'
+      payloadBuildResult.payload.action = 'completed'
 
       await robot.receive(payloadBuildResult)
       expect(github.checks.update).toHaveBeenCalledTimes(1)

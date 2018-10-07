@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-//import { WebhookEvent, WebhookPayloadWithRepository } from '@octokit/webhooks' // eslint-disable-line
 import { Request, Response } from 'express' // eslint-disable-line
 import {Application, Context} from 'probot' // eslint-disable-line
 import {createWebhookProxy} from 'probot/lib/webhook-proxy'
@@ -21,25 +20,10 @@ function getHash (orgId: string, projectId: string, buildTargetId: string) : str
 }
 
 // Built-in app to expose stats about the deployment
-module.exports = (app: Application) => {
-  // Cache of stats that get reported
+export function webhookFunc (app: Application) {
+  app.router.use('/webhook', middleware)
 
-  // Check for accounts (typically spammy or abusive) to ignore
-  // const ignoredAccounts = (process.env.IGNORED_ACCOUNTS || '').toLowerCase().split(',')
-
-  // Setup /webhook endpoint to return cached stats
-  app.router.post('/webhook', async (req: Request, res: Response) => {
-    app.log(req.body)
-    //const repository = context.payload.repository
-    const event: any = {
-      event: 'unitycloudbuild',
-      payload: {
-        action: 'completed'
-      }
-    }
-    return app.receive(event)
-  })
-
+  // Webhook Proxy for UnityCloudBuild
   const webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
   if (process.env.NODE_ENV !== 'production' && webhookUrl) {
     createWebhookProxy({
@@ -47,6 +31,57 @@ module.exports = (app: Application) => {
       path: '/webhook',
       port: 3000,
       url: webhookUrl
+    })
+  }
+
+  function middleware (state: any, request: Request, response: Response, next: () => void) {
+    const dataChunks: Uint8Array[] = []
+    request.on('error', (error) => {
+      response.statusCode = 500
+      response.end(error.toString())
+    })
+
+    request.on('data', (chunk: Uint8Array) => {
+      dataChunks.push(chunk)
+    })
+
+    request.on('end', () => {
+      const data = Buffer.concat(dataChunks).toString()
+      let payload
+
+      try {
+        payload = JSON.parse(data)
+      } catch (error) {
+        response.statusCode = 400
+        response.end('Invalid JSON')
+        return
+      }
+
+      app.log(payload)
+
+      state.eventHandler.receive({
+        id: 1,
+        name: 'unitycloudbuild',
+        payload: payload
+      })
+      response.end('ok\n')
+      /*
+      verifyAndReceive(state, {
+        id: id,
+        name: eventName,
+        payload,
+        signature
+      })
+        .then(() => {
+          response.end('ok\n')
+        })
+
+        .catch(error => {
+          response.statusCode = error.status || 500
+          response.end(error.toString())
+        })
+    })
+    */
     })
   }
 }

@@ -33,8 +33,8 @@ export function webhookFunc (app: Application) {
       name: 'unitycloudbuild',
       payload: context.payload
     }
-    event.payload.action = 'completed'
-    event.payload.buildResult = req.body
+    event.payload.action = convertEventAction(result.buildStatus)
+    event.payload.buildResult = result
     return app.receive(event)
   })
 
@@ -55,10 +55,36 @@ export interface BuildResult {
   projectId: string
   buildTargetId: string
   buildNumber: string
-  buildStatus: string
+  buildStatus: BuildStatusType
 }
 
-export function parseBuildResult (body: any) {
+export enum BuildStatusType {
+  queued = 'queued',
+  sentToBuilder = 'sentToBuilder',
+  started = 'started',
+  restarted = 'restarted',
+  success = 'success',
+  failure = 'failure',
+  canceled = 'canceled',
+  unknown = 'unknown'
+}
+
+function convertEventAction (buildStatus : BuildStatusType): string {
+  switch (buildStatus) {
+    case BuildStatusType.queued:
+    case BuildStatusType.sentToBuilder:
+    case BuildStatusType.started:
+    case BuildStatusType.restarted:
+      return 'queued'
+    case BuildStatusType.success:
+    case BuildStatusType.failure:
+    case BuildStatusType.canceled:
+    case BuildStatusType.unknown:
+      return 'completed'
+  }
+}
+
+export function parseBuildResult (body: any) : BuildResult {
   const path = body.links.api_self.href
   const splitted = path.split('/')
   return {
@@ -66,17 +92,18 @@ export function parseBuildResult (body: any) {
     projectId: splitted[5],
     buildTargetId: splitted[7],
     buildNumber: splitted[9],
-    buildStatus: body.buildStatus
+    buildStatus: BuildStatusType[body.buildStatus] as BuildStatusType
   }
 }
 
 function middleware (request: Request, response: Response, next: () => void) {
-  //TODO::verify request
+  // TODO::verify request
   if (request.headers['x-unity-event'] === undefined) {
     response.statusCode = 400
     response.end('Invalid Request')
     return
   }
+
   const dataChunks: Uint8Array[] = []
   request.on('error', (error) => {
     response.statusCode = 500

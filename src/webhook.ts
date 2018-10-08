@@ -54,7 +54,7 @@ export interface BuildResult {
   orgId: string
   projectId: string
   buildTargetId: string
-  buildNumber: string
+  buildNumber: number
   buildStatus: BuildStatusType
 }
 

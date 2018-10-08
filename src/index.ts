@@ -1,7 +1,7 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
-import {addContext, webhookFunc, BuildResult, BuildStatusType} from './webhook' // eslint-disable-line
+import {addContext, webhookFunc, BuildResult} from './webhook' // eslint-disable-line
 
 export = (app: Application) => {
   app.load(webhookFunc)
@@ -9,35 +9,6 @@ export = (app: Application) => {
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
   app.on(['check_run.rerequested'], recheckPullRequest)
   app.on(['unitycloudbuild.completed', 'unitycloudbuild.in_progress'], publishBuildStatus)
-  function convertConclusion (buildStatus:BuildStatusType) {
-    switch (buildStatus) {
-      case BuildStatusType.success:
-        return 'success'
-      case BuildStatusType.failure:
-        return 'failure'
-      case BuildStatusType.canceled:
-        return 'cancelled'
-      case BuildStatusType.unknown:
-        return 'neutral'
-    }
-    return undefined
-  }
-
-  function convertChecksStatus (buildStatus:BuildStatusType) : 'queued' | 'in_progress' | 'completed' {
-    switch (buildStatus) {
-      case BuildStatusType.queued:
-        return 'queued'
-      case BuildStatusType.sentToBuilder:
-      case BuildStatusType.started:
-      case BuildStatusType.restarted:
-        return 'in_progress'
-      case BuildStatusType.success:
-      case BuildStatusType.failure:
-      case BuildStatusType.canceled:
-      case BuildStatusType.unknown:
-        return 'completed'
-    }
-  }
 
   async function checkPullRequest (context: Context) {
     const pullRequest = context.payload.pull_request
@@ -134,7 +105,7 @@ export = (app: Application) => {
   async function build (context: Context, config: any, param: any, checkRunId: number) {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
-    const nameCheckRun = `Unity CI - ${param.name}`
+    const checkRunName = `Unity CI - ${param.name}`
     const platform = param.platform
     const branch = pullRequest.head.ref
     const orgId = config.orgid
@@ -152,7 +123,7 @@ export = (app: Application) => {
         repo: repository.name,
         check_run_id: checkRunId.toString(),
         external_id: buildTargetId,
-        name: nameCheckRun,
+        name: checkRunName,
         status: 'completed',
         conclusion: 'failure',
         completed_at: new Date().toISOString(),
@@ -175,7 +146,7 @@ export = (app: Application) => {
         repo: repository.name,
         check_run_id: checkRunId.toString(),
         external_id: buildTargetId,
-        name: nameCheckRun,
+        name: checkRunName,
         status: 'completed',
         conclusion: 'failure',
         completed_at: new Date().toISOString(),
@@ -188,20 +159,9 @@ export = (app: Application) => {
     }
 
     const buildNumber = resultBuild.body[0].build
-
-    // In progress
-    await context.github.checks.update({
-      owner: repository.owner.login,
-      repo: repository.name,
-      check_run_id: checkRunId.toString(),
-      external_id: buildTargetId,
-      name: nameCheckRun,
-      status: 'in_progress',
-      output: {
-        title: 'In Progress',
-        summary: Checks.getSummary(orgId, projectId, buildTargetId, buildNumber)
-      }
-    })
+    let checks = new Checks(orgId, projectId, buildTargetId, buildNumber)
+    const params = checks.parameter(checkRunId, checkRunName, repository)
+    await context.github.checks.update(params)
   }
 
   async function recheckPullRequest (context: Context) {
@@ -211,7 +171,6 @@ export = (app: Application) => {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
     const buildResult: BuildResult = context.payload.buildResult
-    const conclusion = convertConclusion(buildResult.buildStatus)
     const buildTargetId = buildResult.buildTargetId
 
     const resultList = await context.github.checks.listForRef({
@@ -226,19 +185,11 @@ export = (app: Application) => {
       return
     }
     const checkRunId = checkRun.id
+    const checkRunName = checkRun.name
+    let checks = new Checks(buildResult.orgId, buildResult.projectId, buildResult.buildTargetId, buildResult.buildNumber)
+    const params = checks.parameter(checkRunId, checkRunName, repository, buildResult.buildStatus)
 
     // Completed
-    await context.github.checks.update({
-      owner: repository.owner.login,
-      repo: repository.name,
-      check_run_id: checkRunId.toString(),
-      status: convertChecksStatus(buildResult.buildStatus),
-      conclusion: conclusion,
-      completed_at: new Date().toISOString(),
-      output: {
-        title: 'Build Success',
-        summary: 'Build Passed'
-      }
-    })
+    await context.github.checks.update(params)
   }
 }

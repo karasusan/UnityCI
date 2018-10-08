@@ -17,7 +17,7 @@ export = (app: Application) => {
     const nameCheckRun = 'Unity CI - Pull Request'
     // Load unityci.yaml from Repository
     const config = await context.config('unityci.yml')
-    // unityci.yaml not found
+    // unityci.yml not found
     if (!config) {
       await context.github.checks.create({
         head_sha: headSha,
@@ -60,6 +60,7 @@ export = (app: Application) => {
       }
     })
 
+    // Register Webhook for UnityCloudBuild
     let _build = new Build(config, app.log)
     const resultRegisterHook = await _build.registerHook()
     if (![200, 201].includes(resultRegisterHook.status)) {
@@ -111,10 +112,6 @@ export = (app: Application) => {
     const orgId = config.orgid
     const projectId = config.projectid
     const buildTargetId = Build.getBuildTargetId(branch, platform)
-
-    let _build = new Build(config, app.log)
-    const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
-
     let checks = new Checks(orgId, projectId, buildTargetId)
     let checkParams = {
       id: checkRunId,
@@ -123,8 +120,11 @@ export = (app: Application) => {
       buildStatus: BuildStatusType.queued,
       details: ''
     }
+    // Prepare BuildTarget
+    let _build = new Build(config, app.log)
+    const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
 
-    // Build failed
+    // Prepare BuildTarget failed
     if (![200, 201, 202].includes(resultPrepareBuild.status)) {
       checkParams.buildStatus = BuildStatusType.failure
       checkParams.details = resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.text
@@ -132,7 +132,7 @@ export = (app: Application) => {
       return
     }
 
-    // cotext
+    // Cache Current Cotext
     addContext(orgId, projectId, buildTargetId, context)
 
     // Start build
@@ -144,6 +144,7 @@ export = (app: Application) => {
       return
     }
 
+    // Update CheckRun Status
     const buildNumber = resultBuild.body[0].build
     checks.setBuildNumber(buildNumber)
     await context.github.checks.update(checks.parameter(checkParams))

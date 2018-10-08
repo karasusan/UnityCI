@@ -1,20 +1,22 @@
 import {BuildStatusType} from './webhook'
 
 export default class Checks {
-  private readonly url:string = '' // eslint-disable-line
-  //private nameCheckRun = 'Unity CI - Pull Request' // eslint-disable-line
+  constructor (private orgId: string, private projectId:string, private buildTargetId:string, private buildNumber?:number) { // eslint-disable-line no-useless-constructor
+  }
 
-  constructor (private orgId: string, private projectId:string, private buildTargetId:string, private buildNumber:number) {
-    this.url = process.env.UNITYCLOUDBUILD_DEVELOPER_URL +
-      `/orgs/${this.orgId}/projects/${this.projectId}/buildtargets/${this.buildTargetId}/builds/${this.buildNumber}/log/compact/`
+  public setBuildNumber (buildNumber:number) {
+    this.buildNumber = buildNumber
   }
 
   public parameter (
-    id: number,
-    name: string,
-    repository:any,
-    buildStatus: BuildStatusType = BuildStatusType.queued
+    parameters: {
+      id: number,
+      name: string,
+      repository: any,
+      buildStatus: BuildStatusType,
+      details: string }
   ) {
+    let {id, name, repository, buildStatus, details} = parameters
     const conclusion = this.convertConclusion(buildStatus)
     const status = this.convertChecksStatus(buildStatus)
 
@@ -22,6 +24,7 @@ export default class Checks {
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: id.toString(),
+      details_url: this.getUrl(),
       external_id: this.buildTargetId,
       name: name,
       status: status,
@@ -29,9 +32,19 @@ export default class Checks {
       completed_at: conclusion ? new Date().toISOString() : undefined,
       output: {
         title: this.getTitle(buildStatus),
-        summary: this.getSummary(status)
+        summary: this.getSummary(status),
+        text: details
       }
     }
+  }
+
+  private getUrl () :string {
+    if (this.buildNumber === undefined) {
+      return process.env.UNITYCLOUDBUILD_DEVELOPER_URL +
+        `/orgs/${this.orgId}/projects/${this.projectId}/buildtargets/`
+    }
+    return process.env.UNITYCLOUDBUILD_DEVELOPER_URL +
+      `/orgs/${this.orgId}/projects/${this.projectId}/buildtargets/${this.buildTargetId}/builds/${this.buildNumber}/log/compact/`
   }
 
   private getTitle (buildStatus:BuildStatusType) : string {
@@ -54,13 +67,14 @@ export default class Checks {
   }
 
   private getSummary (status:string): string {
+    const url = this.getUrl()
     switch (status) {
       case 'in_progress':
-        return `[This Build](${this.url}) in progress.`
+        return `[This Build](${url}) in progress.`
       case 'queued':
-        return `[This Build](${this.url}) queued.`
+        return `[This Build](${url}) queued.`
       case 'completed':
-        return `[This Build](${this.url}) completed.`
+        return `[This Build](${url}) completed.`
     }
     throw new Error(`Unknown build status ${status}`)
   }

@@ -1,7 +1,7 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
-import {addContext, webhookFunc, BuildResult} from './webhook' // eslint-disable-line
+import {addContext, webhookFunc, BuildResult, BuildStatusType} from './webhook' // eslint-disable-line
 
 export = (app: Application) => {
   app.load(webhookFunc)
@@ -113,25 +113,22 @@ export = (app: Application) => {
     const buildTargetId = Build.getBuildTargetId(branch, platform)
 
     let _build = new Build(config, app.log)
-    // TODO:: Update BuiltTarget on UnityCloudBuild
     const resultPrepareBuild = await _build.prepareBuildTarget(branch, platform)
+
+    let checks = new Checks(orgId, projectId, buildTargetId)
+    let checkParams = {
+      id: checkRunId,
+      name: checkRunName,
+      repository: repository,
+      buildStatus: BuildStatusType.queued,
+      details: ''
+    }
 
     // Build failed
     if (![200, 201, 202].includes(resultPrepareBuild.status)) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        external_id: buildTargetId,
-        name: checkRunName,
-        status: 'completed',
-        conclusion: 'failure',
-        completed_at: new Date().toISOString(),
-        output: {
-          title: 'Build Failed',
-          summary: resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.text
-        }
-      })
+      checkParams.buildStatus = BuildStatusType.failure
+      checkParams.details = resultPrepareBuild.status.toString() + ' ' + resultPrepareBuild.text
+      await context.github.checks.update(checks.parameter(checkParams))
       return
     }
 
@@ -141,27 +138,15 @@ export = (app: Application) => {
     // Start build
     const resultBuild = await _build.build(branch, platform)
     if (resultBuild.status !== 202) {
-      await context.github.checks.update({
-        owner: repository.owner.login,
-        repo: repository.name,
-        check_run_id: checkRunId.toString(),
-        external_id: buildTargetId,
-        name: checkRunName,
-        status: 'completed',
-        conclusion: 'failure',
-        completed_at: new Date().toISOString(),
-        output: {
-          title: 'Build Failed',
-          summary: resultBuild.status.toString() + ' ' + resultBuild.text
-        }
-      })
+      checkParams.buildStatus = BuildStatusType.failure
+      checkParams.details = resultBuild.status.toString() + ' ' + resultBuild.text
+      await context.github.checks.update(checks.parameter(checkParams))
       return
     }
 
     const buildNumber = resultBuild.body[0].build
-    let checks = new Checks(orgId, projectId, buildTargetId, buildNumber)
-    const params = checks.parameter(checkRunId, checkRunName, repository)
-    await context.github.checks.update(params)
+    checks.setBuildNumber(buildNumber)
+    await context.github.checks.update(checks.parameter(checkParams))
   }
 
   async function recheckPullRequest (context: Context) {
@@ -187,7 +172,13 @@ export = (app: Application) => {
     const checkRunId = checkRun.id
     const checkRunName = checkRun.name
     let checks = new Checks(buildResult.orgId, buildResult.projectId, buildResult.buildTargetId, buildResult.buildNumber)
-    const params = checks.parameter(checkRunId, checkRunName, repository, buildResult.buildStatus)
+    const params = checks.parameter({
+      id: checkRunId,
+      name: checkRunName,
+      repository: repository,
+      buildStatus: buildResult.buildStatus,
+      details: ''
+    })
 
     // Completed
     await context.github.checks.update(params)

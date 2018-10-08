@@ -75,7 +75,7 @@ function convertEventAction (buildStatus : BuildStatusType): string {
     case BuildStatusType.sentToBuilder:
     case BuildStatusType.started:
     case BuildStatusType.restarted:
-      return 'queued'
+      return 'in_progress'
     case BuildStatusType.success:
     case BuildStatusType.failure:
     case BuildStatusType.canceled:

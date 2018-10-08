@@ -1,27 +1,42 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
-import { addContext, webhookFunc, BuildResult } from './webhook' // eslint-disable-line
+import {addContext, webhookFunc, BuildResult, BuildStatusType} from './webhook' // eslint-disable-line
 
 export = (app: Application) => {
   app.load(webhookFunc)
 
   app.on(['pull_request.opened', 'pull_request.reopened'], checkPullRequest)
   app.on(['check_run.rerequested'], recheckPullRequest)
-  app.on(['unitycloudbuild.completed'], publishBuildStatus)
-
-  function convertConclusion (buildStatus:string) {
+  app.on(['unitycloudbuild.completed', 'unitycloudbuild.in_progress'], publishBuildStatus)
+  function convertConclusion (buildStatus:BuildStatusType) {
     switch (buildStatus) {
-      case 'success':
+      case BuildStatusType.success:
         return 'success'
-      case 'failure':
+      case BuildStatusType.failure:
         return 'failure'
-      case 'canceled':
+      case BuildStatusType.canceled:
         return 'cancelled'
-      case 'unknown':
+      case BuildStatusType.unknown:
         return 'neutral'
     }
-    throw new Error(`Unknown build status ${buildStatus}`)
+    return undefined
+  }
+
+  function convertChecksStatus (buildStatus:BuildStatusType) : 'queued' | 'in_progress' | 'completed' {
+    switch (buildStatus) {
+      case BuildStatusType.queued:
+        return 'queued'
+      case BuildStatusType.sentToBuilder:
+      case BuildStatusType.started:
+      case BuildStatusType.restarted:
+        return 'in_progress'
+      case BuildStatusType.success:
+      case BuildStatusType.failure:
+      case BuildStatusType.canceled:
+      case BuildStatusType.unknown:
+        return 'completed'
+    }
   }
 
   async function checkPullRequest (context: Context) {
@@ -217,7 +232,7 @@ export = (app: Application) => {
       owner: repository.owner.login,
       repo: repository.name,
       check_run_id: checkRunId.toString(),
-      status: 'completed',
+      status: convertChecksStatus(buildResult.buildStatus),
       conclusion: conclusion,
       completed_at: new Date().toISOString(),
       output: {

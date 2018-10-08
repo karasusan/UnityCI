@@ -1,9 +1,7 @@
 import {Application, Context} from 'probot' // eslint-disable-line
 import { default as Build } from './build'
 import Checks from './checks'
-import { addContext, webhookFunc } from './webhook' // eslint-disable-line
-
-//const appFn = require('./webhook')
+import { addContext, webhookFunc, BuildResult } from './webhook' // eslint-disable-line
 
 export = (app: Application) => {
   app.load(webhookFunc)
@@ -195,12 +193,24 @@ export = (app: Application) => {
   }
 
   async function publishBuildStatus (context: Context) {
+    const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
-    const buildResult = context.payload.buildResult
+    const buildResult: BuildResult = context.payload.buildResult
     const conclusion = convertConclusion(buildResult.buildStatus)
+    const buildTargetId = buildResult.buildTargetId
 
-    //TODO::
-    const checkRunId = 0
+    const resultList = await context.github.checks.listForRef({
+      owner: repository.owner.login,
+      repo: repository.name,
+      ref: pullRequest.head.ref
+    })
+
+    const checkRun = resultList.data.check_runs.find(_checkRun => _checkRun.external_id === buildTargetId)
+    if (checkRun === undefined) {
+      app.log.error(`checkRun not found ${JSON.stringify(buildResult)}`)
+      return
+    }
+    const checkRunId = checkRun.id
 
     // Completed
     await context.github.checks.update({

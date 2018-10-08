@@ -19,11 +19,26 @@ function getHash (orgId: string, projectId: string, buildTargetId: string) : str
   return md5(`${orgId}/${projectId}/${buildTargetId}`)
 }
 
-// Built-in app to expose stats about the deployment
 export function webhookFunc (app: Application) {
-  app.router.use('/webhook', middleware)
+  app.router.use(middleware)
+  app.router.post('/webhook', async (req: Request, res: Response) => {
+    res.writeHead(200)
+    res.end()
 
-  // Webhook Proxy for UnityCloudBuild
+    const result: BuildResult = parseBuildResult(req.body)
+    const hash = getHash(result.orgId, result.projectId, result.buildTargetId)
+    const context = contexts[hash]
+
+    const event = {
+      name: 'unitycloudbuild',
+      payload: context.payload
+    }
+    event.payload.action = 'completed'
+    event.payload.buildResult = req.body
+    return app.receive(event)
+  })
+
+  // Launch Smee client to receive webhook from UnityCloudBuild
   const webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
   if (process.env.NODE_ENV !== 'production' && webhookUrl) {
     createWebhookProxy({
@@ -33,55 +48,62 @@ export function webhookFunc (app: Application) {
       url: webhookUrl
     })
   }
+}
 
-  function middleware (state: any, request: Request, response: Response, next: () => void) {
-    const dataChunks: Uint8Array[] = []
-    request.on('error', (error) => {
-      response.statusCode = 500
-      response.end(error.toString())
-    })
+export interface BuildResult {
+  orgId: string
+  projectId: string
+  buildTargetId: string
+  buildNumber: string
+  buildStatus: string
+}
 
-    request.on('data', (chunk: Uint8Array) => {
-      dataChunks.push(chunk)
-    })
-
-    request.on('end', () => {
-      const data = Buffer.concat(dataChunks).toString()
-      let payload
-
-      try {
-        payload = JSON.parse(data)
-      } catch (error) {
-        response.statusCode = 400
-        response.end('Invalid JSON')
-        return
-      }
-
-      app.log(payload)
-
-      state.eventHandler.receive({
-        id: 1,
-        name: 'unitycloudbuild',
-        payload: payload
-      })
-      response.end('ok\n')
-      /*
-      verifyAndReceive(state, {
-        id: id,
-        name: eventName,
-        payload,
-        signature
-      })
-        .then(() => {
-          response.end('ok\n')
-        })
-
-        .catch(error => {
-          response.statusCode = error.status || 500
-          response.end(error.toString())
-        })
-    })
-    */
-    })
+export function parseBuildResult (body: any) {
+  const path = body.links.api_self.href
+  const splitted = path.split('/')
+  return {
+    orgId: splitted[3],
+    projectId: splitted[5],
+    buildTargetId: splitted[7],
+    buildNumber: splitted[9],
+    buildStatus: body.buildStatus
   }
+}
+
+function middleware (request: Request, response: Response, next: () => void) {
+  //TODO::verify request
+  if (request.headers['x-unity-event'] === undefined) {
+    response.statusCode = 400
+    response.end('Invalid Request')
+    return
+  }
+  const dataChunks: Uint8Array[] = []
+  request.on('error', (error) => {
+    response.statusCode = 500
+    response.end(error.toString())
+  })
+
+  request.on('data', (chunk: Uint8Array) => {
+    dataChunks.push(chunk)
+
+    const data = Buffer.concat(dataChunks).toString()
+    let payload
+
+    try {
+      payload = JSON.parse(data)
+    } catch (error) {
+      response.statusCode = 400
+      response.end('Invalid JSON')
+      return
+    }
+    request.body = payload
+    next()
+  })
+
+  /*
+  // TODO:: 'end' event not fired, why?
+  request.on('end', () => {
+    console.log('end')
+  })
+  */
 }

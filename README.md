@@ -9,12 +9,9 @@ This product made with [Probot](https://probot.github.io).
 |---------|---------|
 |[![Build Status](https://travis-ci.org/karasusan/UnityCI.svg?branch=master)](https://travis-ci.org/karasusan/UnityCI)|[![codecov](https://codecov.io/gh/karasusan/UnityCI/branch/master/graph/badge.svg)](https://codecov.io/gh/karasusan/UnityCI)|
 
-**UNDER CONSTRUCTION**
+## Usage
 
-<!--
-# UnityCI
-
-> A GitHub App built with [Probot](https://probot.github.io) that Continuous Integration for Unity Project
+Install GithubApp
 
 ## Setup
 
@@ -29,6 +26,18 @@ npm run build
 npm start
 ```
 
+## Deployment
+
+Hosting to Google App Engine with [TravisCI](https://travis-ci.com/karasusan/UnityCI).　It is written [here](https://docs.travis-ci.com/user/deployment/google-app-engine/).
+
+### Encrypted Files
+
+These files encrypted with [the Travis command line tool](https://github.com/travis-ci/travis.rb#readme).
+
+- gcp-secret.json.ecp
+- app.yaml.ecp
+- githubapp-secret.pem.ecp
+
 ## Contributing
 
 If you have suggestions for how unityci could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
@@ -38,4 +47,3 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 ## License
 
 [ISC](LICENSE) © 2018 kazuki matsumoto <karasusan@gmail.com> (https://github.com/karasusan/UnityCI)
--->

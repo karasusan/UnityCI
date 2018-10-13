@@ -30,11 +30,14 @@ npm start
 
 Hosting to Google App Engine with [TravisCI](https://travis-ci.com/karasusan/UnityCI).　It is written [here](https://docs.travis-ci.com/user/deployment/google-app-engine/).
 
-### Encrypted Files
+### Encrypting Multiple Files
 
 These files encrypted with [the Travis command line tool](https://github.com/travis-ci/travis.rb#readme).
 
-- gcp-secret.json.ecp
+https://docs.travis-ci.com/user/encrypting-files/#encrypting-multiple-files
+
+
+- gcp-secret.json
 
 See [this](https://docs.travis-ci.com/user/deployment/google-app-engine/).
 
@@ -43,8 +46,13 @@ Go to the [Google Cloud Console Dashboard](http://console.developers.google.com/
 1. Enable “Google App Engine Admin API”,
 2. Go to “Credentials”, click “Add Credential” and “Service account key”, finally click “JSON” to download your Service Account JSON file.
 
-- app.yaml.ecp
-- githubapp-secret.pem.ecp
+- app.yaml
+
+
+
+- unity-ci.githubapp.private-key.pem
+
+See [this](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key)
 
 ## Contributing
 

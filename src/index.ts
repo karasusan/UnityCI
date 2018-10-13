@@ -10,7 +10,7 @@ export = (app: Application) => {
   app.on(['check_run.rerequested'], recheckPullRequest)
   app.on(['unitycloudbuild.completed', 'unitycloudbuild.in_progress'], publishBuildStatus)
 
-  async function checkPullRequest (context: Context) {
+  async function checkPullRequest (context: Context) : Promise<void> {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
     const headSha = pullRequest.head.sha
@@ -103,7 +103,7 @@ export = (app: Application) => {
     await Promise.all(promises)
   }
 
-  async function build (context: Context, config: any, param: any, checkRunId: number) {
+  async function build (context: Context, config: any, param: any, checkRunId: number) : Promise<void> {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
     const checkRunName = `Unity CI - ${param.name}`
@@ -153,7 +153,7 @@ export = (app: Application) => {
   async function recheckPullRequest (context: Context) {
   }
 
-  async function publishBuildStatus (context: Context) {
+  async function publishBuildStatus (context: Context) : Promise<void> {
     const pullRequest = context.payload.pull_request
     const repository = context.payload.repository
     const buildResult: BuildResult = context.payload.buildResult

@@ -12,3 +12,4 @@ deploy:
   keyfile: gcp-secret.json
   project: app-unityci
   config: app.yaml
+  skip_cleanup: true

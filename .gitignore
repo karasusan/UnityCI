@@ -4,3 +4,6 @@ npm-debug.log
 .env
 coverage
 lib
+app.yaml
+gcp-secret.json
+.idea/*

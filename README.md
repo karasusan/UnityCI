@@ -35,6 +35,14 @@ Hosting to Google App Engine with [TravisCI](https://travis-ci.com/karasusan/Uni
 These files encrypted with [the Travis command line tool](https://github.com/travis-ci/travis.rb#readme).
 
 - gcp-secret.json.ecp
+
+See [this](https://docs.travis-ci.com/user/deployment/google-app-engine/).
+
+Go to the [Google Cloud Console Dashboard](http://console.developers.google.com/) and:
+
+1. Enable “Google App Engine Admin API”,
+2. Go to “Credentials”, click “Add Credential” and “Service account key”, finally click “JSON” to download your Service Account JSON file.
+
 - app.yaml.ecp
 - githubapp-secret.pem.ecp
 

@@ -26,7 +26,8 @@
     "@types/md5": "^2.1.33",
     "@types/superagent": "^3.8.4",
     "md5": "^2.2.1",
-    "probot": "^7.0.0"
+    "probot": "^7.0.0",
+    "superagent": "^4.0.0-beta.5"
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",

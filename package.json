@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --exec \"npm start\"",
-    "start": "NODE_ENV=production probot run ./lib/index.js",
+    "start": "NODE_ENV=production probot run /app/lib/index.js",
     "lint": "standard **/*.ts --fix",
     "test": "jest && standard **/*.ts && codecov",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"

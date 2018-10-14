@@ -9,8 +9,6 @@ before_install:
   - tar xvf secrets.tar
 before_deploy:
   - npm run build
-  - ls
-  - ls ./lib
 deploy:
   provider: gae
   keyfile: gcp-secret.json

@@ -11,7 +11,9 @@ This product made with [Probot](https://probot.github.io).
 
 ## Usage
 
-Install GithubApp
+1. Install [GithubApp](https://github.com/apps/unity-ci) to your github repo.
+2. Create [unityci.yml](https://github.com/karasusan/UnityCISample/blob/master/.github/unityci.yml).
+3. Create Pull Request.
 
 ## Setup
 
@@ -34,25 +36,25 @@ Hosting to Google App Engine with [TravisCI](https://travis-ci.com/karasusan/Uni
 
 These files encrypted with [the Travis command line tool](https://github.com/travis-ci/travis.rb#readme).
 
-https://docs.travis-ci.com/user/encrypting-files/#encrypting-multiple-files
+```sh
+# Create archive file
+tar cvf secrets.tar app.yaml gcp-secret.json githubapp.private-key.pem
+
+# encrypt 
+travis encrypt-file secrets.tar --pro
+```
+
+See also travis-ci [document](https://docs.travis-ci.com/user/encrypting-files/#encrypting-multiple-files).
 
 
 - gcp-secret.json
 
-See [this](https://docs.travis-ci.com/user/deployment/google-app-engine/).
-
-Go to the [Google Cloud Console Dashboard](http://console.developers.google.com/) and:
-
-1. Enable “Google App Engine Admin API”,
-2. Go to “Credentials”, click “Add Credential” and “Service account key”, finally click “JSON” to download your Service Account JSON file.
+  - See [this](https://docs.travis-ci.com/user/deployment/google-app-engine/). You can obtain this from [Google Cloud Console Dashboard](http://console.developers.google.com/).
 
 - app.yaml
 
-
-
 - unity-ci.githubapp.private-key.pem
-
-See [this](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key)
+  - See [this](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key)
 
 ## Contributing
 

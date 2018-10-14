@@ -13,3 +13,4 @@ deploy:
   project: app-unityci
   config: app.yaml
   skip_cleanup: true
+  verbosity: debug

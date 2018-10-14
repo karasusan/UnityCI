@@ -39,7 +39,7 @@ export function webhookFunc (app: Application) {
   })
 
   // Launch Smee client to receive webhook from UnityCloudBuild
-  const webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
+  const webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_URL
   if (process.env.NODE_ENV !== 'production' && webhookUrl) {
     createWebhookProxy({
       logger: app.log,

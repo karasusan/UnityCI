@@ -10,9 +10,7 @@ export default class Build {
   constructor (private config: any, private log: (msg: string) => void = (msg: string) => {}) {
     let logger = { log: this.log }
     this.api = new UnityCloudBuildAPI(this.config.url, logger, this.config.apikey)
-    if (process.env.NODE_ENV !== 'production') {
-      this.webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_PROXY_URL
-    }
+    this.webhookUrl = process.env.UNITYCLOUDBUILD_WEBHOOK_URL
   }
 
   public static getBuildTargetId (branch: string, platform : string) : string {
